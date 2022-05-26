@@ -1,30 +1,27 @@
 import { prisma } from "../../prisma";
 import { UserData, UsersRepository } from "../users-repository";
 
-export class PrismaUsersRepository implements UsersRepository {    
-    async find() {  
-        const users = await prisma.user.findMany();
+export class PrismaUsersRepository implements UsersRepository {
+    async find() {
+        const users = await prisma.user.findMany({
+            select: {
+                name: true,
+                email: true,
+            }
+        });
         return users;
     };
 
-    async findById(id: string) {  
+    async findById(id: string) {
         const user = await prisma.user.findUnique({
             where: {
                 id: id
+            },
+            select: {
+                name: true,
+                email: true,
             }
         });
-
-        return user;
-    };
-
-    async create({ name, email, password }: UserData) {
-        const user = await prisma.user.create({
-            data: {
-                name,
-                email,
-                password
-            }
-        })
 
         return user;
     };
