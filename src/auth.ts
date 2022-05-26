@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
 
+export let userSessionId = "";
+
 export function validateToken(req: any, res: any, next: any) {
     let token = req.body.token || req.query.token || req.headers["authorization"]
 
@@ -14,7 +16,9 @@ export function validateToken(req: any, res: any, next: any) {
             if (err) {
                 return res.status(403).send({ message: "Token inválido." });
             } else {
+                console.log("decoded", decoded);
                 req.decoded = decoded;
+                userSessionId = decoded.userId;
                 next();
             }
         });    

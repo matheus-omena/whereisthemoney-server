@@ -1,4 +1,5 @@
 import express from "express";
+import { validateToken } from "../auth";
 import { PrismaResponsiblesRepository } from "../repositories/prisma/prisma-responsibles-repository";
 import { CreateResponsibleUseCase } from "../use-cases/responsibles/create-responsible-use-case";
 import { DeleteResponsibleUseCase } from "../use-cases/responsibles/delete-responsible-use-case";
@@ -7,7 +8,7 @@ import { FindResponsiblesUseCase } from "../use-cases/responsibles/find-responsi
 
 export const responsibleRoutes = express.Router();
 
-responsibleRoutes.get('/', async (req, res) => {
+responsibleRoutes.get('/', validateToken, async (req, res) => {
     const prismaResponsiblesRepository = new PrismaResponsiblesRepository();
     const findResponsiblesUseCase = new FindResponsiblesUseCase(prismaResponsiblesRepository);
 
@@ -16,7 +17,7 @@ responsibleRoutes.get('/', async (req, res) => {
     return res.status(201).json({ data: resp });
 })
 
-responsibleRoutes.get('/:id', async (req, res) => {
+responsibleRoutes.get('/:id', validateToken, async (req, res) => {
     const { id } = req.params;
     const prismaResponsiblesRepository = new PrismaResponsiblesRepository();
     const findResponsibleByIdUseCase = new FindResponsibleByIdUseCase(prismaResponsiblesRepository);
@@ -26,7 +27,7 @@ responsibleRoutes.get('/:id', async (req, res) => {
     return res.status(201).json({ data: resp });
 })
 
-responsibleRoutes.post('/', async (req, res) => {    
+responsibleRoutes.post('/', validateToken, async (req, res) => {    
     const { name, color } = req.body;
 
     const prismaResponsiblesRepository = new PrismaResponsiblesRepository();
@@ -40,7 +41,7 @@ responsibleRoutes.post('/', async (req, res) => {
     return res.status(201).json({ data: resp, message: 'Responsável criado com sucesso.' });
 })
 
-responsibleRoutes.delete('/:id', async (req, res) => {
+responsibleRoutes.delete('/:id', validateToken, async (req, res) => {
     const { id } = req.params;
     const prismaResponsiblesRepository = new PrismaResponsiblesRepository();
     const deleteResponsibleUseCase = new DeleteResponsibleUseCase(prismaResponsiblesRepository);

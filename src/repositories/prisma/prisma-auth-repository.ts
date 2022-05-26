@@ -20,7 +20,7 @@ export class PrismaAuthRepository implements AuthRepository {
                 data: {
                     name,
                     email,
-                    password
+                    password                    
                 }
             })
     

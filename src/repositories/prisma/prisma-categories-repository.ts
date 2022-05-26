@@ -1,3 +1,4 @@
+import { userSessionId } from "../../auth";
 import { prisma } from "../../prisma";
 import { CategoriesRepository, CategoryData } from "../categories-repository";
 
@@ -20,7 +21,8 @@ export class PrismaCategoriesRepository implements CategoriesRepository {
     async create({ name }: CategoryData) {
         const category = await prisma.expenseCategory.create({
             data: {
-                name                
+                name,
+                createdBy: userSessionId
             }
         })
 

@@ -47,7 +47,7 @@ authRoutes.post('/login', async (req, res) => {
         const secret = process.env.SECRET
 
         const token = jwt.sign({
-            id: user.id
+            userId: user.id
         }, secret);
 
         const authUser = await prisma.user.findFirst({

@@ -1,3 +1,4 @@
+import { userSessionId } from "../../auth";
 import { prisma } from "../../prisma";
 import { ResponsibleData, ResponsiblesRepository } from "../responsibles-repository";
 
@@ -21,7 +22,8 @@ export class PrismaResponsiblesRepository implements ResponsiblesRepository {
         const responsible = await prisma.responsible.create({
             data: {
                 name,
-                color
+                color,
+                createdBy: userSessionId
             }
         })
 

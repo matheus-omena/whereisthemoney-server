@@ -1,6 +1,8 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
+// To generate migrations: npx prisma migrate dev
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,18 +13,27 @@ datasource db {
 }
 
 model User {
-  id       String @id @default(uuid())
-  name     String
-  email    String
-  password String
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  password  String
+  createdAt DateTime @default(now())
 
+  Responsible     Responsible[]
+  ExpenseCategory ExpenseCategory[]
+  ExpenseGroup    ExpenseGroup[]
+  FixedExpense    FixedExpense[]
+  MonthlyExpense  MonthlyExpense[]
   @@map("users")
 }
 
 model Responsible {
-  id    String  @id @default(uuid())
-  name  String
-  color String?
+  id        String   @id @default(uuid())
+  name      String
+  color     String?
+  createdAt DateTime @default(now())
+  createdBy String   @unique
+  user      User     @relation(fields: [createdBy], references: [id])
 
   fixedExpense   FixedExpense?
   monthlyExpende MonthlyExpense?
@@ -31,8 +42,11 @@ model Responsible {
 }
 
 model ExpenseCategory {
-  id   String @id @default(uuid())
-  name String
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+  createdBy String   @unique
+  user      User     @relation(fields: [createdBy], references: [id])
 
   expenseGroup ExpenseGroup?
 
@@ -45,6 +59,10 @@ model ExpenseGroup {
   color       String
   type        Int
   paymentDate DateTime?
+  createdAt   DateTime  @default(now())
+
+  createdBy String @unique
+  user      User   @relation(fields: [createdBy], references: [id])
 
   categoryId String          @unique
   category   ExpenseCategory @relation(fields: [categoryId], references: [id])
@@ -62,6 +80,10 @@ model FixedExpense {
   paymentDate        DateTime?
   totalInstallments  Int?
   currentInstallment Int?
+  createdAt          DateTime  @default(now())
+
+  createdBy String @unique
+  user      User   @relation(fields: [createdBy], references: [id])
 
   responsibleId String       @unique
   responsible   Responsible  @relation(fields: [responsibleId], references: [id])
@@ -80,6 +102,10 @@ model MonthlyExpense {
   paymentDate        DateTime?
   totalInstallments  Int?
   currentInstallment Int?
+
+  createdAt DateTime @default(now())
+  createdBy String   @unique
+  user      User     @relation(fields: [createdBy], references: [id])
 
   responsibleId  String       @unique
   responsible    Responsible  @relation(fields: [responsibleId], references: [id])

@@ -1,9 +1,10 @@
+import { userSessionId } from "../../auth";
 import { prisma } from "../../prisma";
-import { UserData, UsersRepository } from "../users-repository";
+import { UsersRepository } from "../users-repository";
 
 export class PrismaUsersRepository implements UsersRepository {
     async find() {
-        const users = await prisma.user.findMany({
+        const users = await prisma.user.findMany({            
             select: {
                 name: true,
                 email: true,

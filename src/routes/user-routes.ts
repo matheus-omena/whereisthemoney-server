@@ -7,18 +7,16 @@ import { FindUsersUseCase } from "../use-cases/users/find-users-use-case";
 
 export const userRoutes = express.Router();
 
-const bcrypt = require('bcrypt');
-
 userRoutes.get('/', validateToken, async (req, res) => {
     const prismaUsersRepository = new PrismaUsersRepository();
     const findUsersUseCase = new FindUsersUseCase(prismaUsersRepository);
-
-    const resp = await findUsersUseCase.execute();
+        
+    const resp = await findUsersUseCase.execute();    
 
     return res.status(201).json({ data: resp });
 })
 
-userRoutes.get('/:id', async (req, res) => {
+userRoutes.get('/:id', validateToken, async (req, res) => {
     const { id } = req.params;
     const prismaUsersRepository = new PrismaUsersRepository();
     const findUserByIdUseCase = new FindUserByIdUseCase(prismaUsersRepository);
@@ -28,7 +26,7 @@ userRoutes.get('/:id', async (req, res) => {
     return res.status(201).json({ data: resp });
 })
 
-userRoutes.delete('/:id', async (req, res) => {
+userRoutes.delete('/:id', validateToken, async (req, res) => {
     const { id } = req.params;
     const prismaUsersRepository = new PrismaUsersRepository();
     const deleteUserUseCase = new DeleteUserUseCase(prismaUsersRepository);
