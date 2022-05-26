@@ -17,5 +17,5 @@ export function validateToken(req: any, res: any, next: any) {
                 req.decoded = decoded;
                 next();
             }
-        });
+        });    
 }
