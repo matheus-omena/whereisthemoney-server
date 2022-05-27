@@ -1,6 +1,7 @@
 import express from "express";
 import { authRoutes } from "./auth-routes";
 import { categoryRoutes } from "./category-routes";
+import { expensiveGroupRoutes } from "./expensive-group-routes";
 import { responsibleRoutes } from "./responsible-routes";
 import { userRoutes } from "./user-routes";
 
@@ -10,3 +11,4 @@ routes.use('/auth', authRoutes);
 routes.use('/users', userRoutes);
 routes.use('/responsibles', responsibleRoutes);
 routes.use('/categories', categoryRoutes);
+routes.use('/expensive-groups', expensiveGroupRoutes);
