@@ -74,13 +74,14 @@ model ExpenseGroup {
 }
 
 model FixedExpense {
-  id                 String    @id @default(uuid())
+  id                 String   @id @default(uuid())
   name               String
   value              Decimal
-  paymentDate        DateTime?
+  paymentDay         Int
   totalInstallments  Int?
   currentInstallment Int?
-  createdAt          DateTime  @default(now())
+  lastMonthProcessed Int
+  createdAt          DateTime @default(now())
 
   createdBy String @unique
   user      User   @relation(fields: [createdBy], references: [id])
@@ -96,10 +97,12 @@ model FixedExpense {
 }
 
 model MonthlyExpense {
-  id                 String    @id @default(uuid())
+  id                 String  @id @default(uuid())
   name               String
   value              Decimal
-  paymentDate        DateTime?
+  isPaid             Boolean
+  paymentDay         Int
+  paymentMonth       Int
   totalInstallments  Int?
   currentInstallment Int?
 
@@ -107,12 +110,12 @@ model MonthlyExpense {
   createdBy String   @unique
   user      User     @relation(fields: [createdBy], references: [id])
 
-  responsibleId  String       @unique
-  responsible    Responsible  @relation(fields: [responsibleId], references: [id])
-  groupId        String       @unique
-  group          ExpenseGroup @relation(fields: [groupId], references: [id])
-  fixedExpenseId String       @unique
-  fixedExpense   FixedExpense @relation(fields: [fixedExpenseId], references: [id])
+  responsibleId  String        @unique
+  responsible    Responsible   @relation(fields: [responsibleId], references: [id])
+  groupId        String        @unique
+  group          ExpenseGroup  @relation(fields: [groupId], references: [id])
+  fixedExpenseId String?       @unique
+  fixedExpense   FixedExpense? @relation(fields: [fixedExpenseId], references: [id])
 
   @@map("monthlyexpenses")
 }

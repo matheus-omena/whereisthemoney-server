@@ -1,4 +1,4 @@
-import { ExpenseGroupsRepository } from "../../repositories/expense-group-repository";
+import { ExpenseGroupsRepository } from "../../repositories/expense-groups-repository";
 
 export class FindExpenseGroupByIdUseCase {    
     constructor(

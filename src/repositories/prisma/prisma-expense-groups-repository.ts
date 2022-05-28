@@ -1,6 +1,6 @@
 import { userSessionId } from "../../auth";
 import { prisma } from "../../prisma";
-import { ExpenseGroupData, ExpenseGroupQueryData, ExpenseGroupsRepository } from "../expense-group-repository";
+import { ExpenseGroupData, ExpenseGroupQueryData, ExpenseGroupsRepository } from "../expense-groups-repository";
 
 export class PrismaExpenseGroupsRepository implements ExpenseGroupsRepository {    
     async find() {  
