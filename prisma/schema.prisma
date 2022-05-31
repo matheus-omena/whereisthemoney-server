@@ -99,12 +99,13 @@ model FixedExpense {
 model MonthlyExpense {
   id                 String  @id @default(uuid())
   name               String
-  value              Decimal
-  isPaid             Boolean
+  value              Decimal  
   paymentDay         Int
   paymentMonth       Int
   totalInstallments  Int?
   currentInstallment Int?
+  isPaid             Boolean
+  dateItWasPaid      DateTime?
 
   createdAt DateTime @default(now())
   createdBy String   @unique

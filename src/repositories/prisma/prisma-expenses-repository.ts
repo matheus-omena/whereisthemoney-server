@@ -1,3 +1,5 @@
+import moment from "moment";
+import { moveMessagePortToContext } from "worker_threads";
 import { userSessionId } from "../../auth";
 import { prisma } from "../../prisma";
 import { ExpenseData, ExpenseQueryData, ExpensesRepository } from "../expenses-repository";
@@ -18,19 +20,42 @@ export class PrismaExpensesRepository implements ExpensesRepository {
         return expense;
     };
 
-    async create({ name, color, type, paymentDate, categoryId }: ExpenseData) {
-        const expense = await prisma.expenseGroup.create({
-            data: {
-                name,
-                color,
-                type,
-                paymentDate,
-                categoryId,
-                createdBy: userSessionId
-            }
-        })
+    async create({ isFixed, name, value, responsibleId, groupId, paymentDate, totalInstallments, currentInstallment }: ExpenseData) {        
+        
+        if (isFixed) {
+            const fixedExpense = await prisma.fixedExpense.create({
+                data: {
+                    name, 
+                    value, 
+                    responsibleId, 
+                    groupId, 
+                    paymentDay: Number(moment(paymentDate).format("MM")), 
+                    lastMonthProcessed: Number(moment(paymentDate).format("MM")),
+                    totalInstallments, 
+                    currentInstallment,
+                    createdBy: userSessionId
+                }
+            });
 
-        return expense;
+            const monthlyExpense = await prisma.monthlyExpense.create({
+                data: {
+                    name, 
+                    value, 
+                    responsibleId, 
+                    groupId, 
+                    paymentDay: Number(moment(paymentDate).format("DD")), 
+                    paymentMonth: Number(moment(paymentDate).format("MM")),
+                    isPaid: false,
+                    dateItWasPaid: null,
+                    totalInstallments, 
+                    currentInstallment,
+                    fixedExpenseId: fixedExpense.id,
+                    createdBy: userSessionId
+                }
+            });
+        }        
+
+        return null;
     };
 
     async update(data: ExpenseQueryData) {
@@ -61,6 +86,6 @@ export class PrismaExpensesRepository implements ExpensesRepository {
     };
 
     async processExpenses() {
-        
+
     };
 }
