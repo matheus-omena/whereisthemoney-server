@@ -25,6 +25,6 @@ export interface ExpensesRepository {
     findById: (id: string) => Promise<any>;
     create: (data: ExpenseData) => Promise<ExpenseQueryData | any>;
     update: (data: ExpenseQueryData) => Promise<any>;
-    delete: (id: string) => Promise<void>;
+    delete: (id: string, deleteLinkedFixedExpense: boolean) => Promise<void>;
     processExpenses: () => Promise<void>;
 }

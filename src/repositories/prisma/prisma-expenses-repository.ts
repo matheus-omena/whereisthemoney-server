@@ -19,8 +19,7 @@ export class PrismaExpensesRepository implements ExpensesRepository {
         return expense;
     };
 
-    async create({ isFixed, name, value, responsibleId, groupId, paymentDay, totalInstallments, currentInstallment }: ExpenseData) {        
-        
+    async create({ isFixed, name, value, responsibleId, groupId, paymentDay, totalInstallments, currentInstallment }: ExpenseData) {
         if (isFixed) {
             const fixedExpense = await prisma.fixedExpense.create({
                 data: {
@@ -52,7 +51,7 @@ export class PrismaExpensesRepository implements ExpensesRepository {
             });
         }  
         else {
-            const monthlyExpense = await prisma.monthlyExpense.create({
+            await prisma.monthlyExpense.create({
                 data: {
                     name, 
                     value, 
@@ -65,9 +64,7 @@ export class PrismaExpensesRepository implements ExpensesRepository {
                     createdBy: userSessionId
                 }
             });    
-        }      
-
-        return null;
+        }
     };
 
     async update(data: ExpenseQueryData) {
@@ -89,12 +86,32 @@ export class PrismaExpensesRepository implements ExpensesRepository {
         return null;
     };
 
-    async delete(id: string) {
-        /*await prisma.expenseGroup.delete({
+    async delete(id: string, deleteLinkedFixedExpense: boolean) {
+        debugger;
+        const expense = await prisma.monthlyExpense.findUnique({
             where: {
                 id: id
             }
-        })*/
+        })
+
+        console.log("deleteLinkedFixedExpense", deleteLinkedFixedExpense);
+        console.log("expense", expense);
+
+        if (expense) {            
+            await prisma.monthlyExpense.delete({
+                where: {
+                    id: id
+                }
+            });
+
+            if (deleteLinkedFixedExpense) {
+                await prisma.fixedExpense.delete({
+                    where: {
+                        id: expense.fixedExpenseId!
+                    }
+                })
+            }
+        }        
     };
 
     async processExpenses() {

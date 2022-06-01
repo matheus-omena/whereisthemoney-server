@@ -1,13 +1,8 @@
 import express from "express";
 import { validateToken } from "../auth";
-import { PrismaExpenseGroupsRepository } from "../repositories/prisma/prisma-expense-groups-repository";
 import { PrismaExpensesRepository } from "../repositories/prisma/prisma-expenses-repository";
-import { CreateExpenseGroupUseCase } from "../use-cases/expense-groups/create-expense-group-use-case";
-import { DeleteExpenseGroupUseCase } from "../use-cases/expense-groups/delete-expense-group-use-case";
-import { FindExpenseGroupByIdUseCase } from "../use-cases/expense-groups/find-expense-group-by-id-use-case";
-import { FindExpenseGroupsUseCase } from "../use-cases/expense-groups/find-expense-groups-use-case";
-import { UpdateExpenseGroupUseCase } from "../use-cases/expense-groups/update-expense-group-use-case";
 import { CreateExpenseUseCase } from "../use-cases/expenses/create-expense-use-case";
+import { DeleteExpenseUseCase } from "../use-cases/expenses/delete-expense-use-case";
 
 export const expenseRoutes = express.Router();
 
@@ -73,12 +68,13 @@ expenseRoutes.post('/', validateToken, async (req, res) => {
 //     return res.status(201).json({ message: 'Grupo de despesas atualizado com sucesso.' });
 // })
 
-// expenseRoutes.delete('/:id', validateToken, async (req, res) => {
-//     const { id } = req.params;
-//     const prismaExpenseGroupsRepository = new PrismaExpenseGroupsRepository();
-//     const deleteExpenseGroupUseCase = new DeleteExpenseGroupUseCase(prismaExpenseGroupsRepository);
+expenseRoutes.delete('/:id', validateToken, async (req, res) => {
+    const { id } = req.params;
+    const { deleteLinkedFixedExpense } = req.body;
+    const prismaExpensesRepository = new PrismaExpensesRepository();
+    const deleteExpenseUseCase = new DeleteExpenseUseCase(prismaExpensesRepository);
 
-//     await deleteExpenseGroupUseCase.execute(id);
+    await deleteExpenseUseCase.execute(id, deleteLinkedFixedExpense);
 
-//     return res.status(201).send();
-// })
+    return res.status(201).send();
+})
