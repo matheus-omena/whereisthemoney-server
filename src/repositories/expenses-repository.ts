@@ -15,7 +15,7 @@ export interface ExpenseData {
     value: number;
     responsibleId: string;
     groupId: string;
-    paymentDate?: Date;
+    paymentDay: number;    
     totalInstallments?: number;
     currentInstallment?: number;
 }

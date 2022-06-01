@@ -15,7 +15,7 @@ datasource db {
 model User {
   id        String   @id @default(uuid())
   name      String
-  email     String
+  email     String   @unique
   password  String
   createdAt DateTime @default(now())
 
@@ -31,12 +31,12 @@ model Responsible {
   id        String   @id @default(uuid())
   name      String
   color     String?
-  createdAt DateTime @default(now())
-  createdBy String   @unique
+  createdBy String
   user      User     @relation(fields: [createdBy], references: [id])
+  createdAt DateTime @default(now())
 
-  fixedExpense   FixedExpense?
-  monthlyExpende MonthlyExpense?
+  FixedExpense   FixedExpense[]
+  MonthlyExpense MonthlyExpense[]
 
   @@map("responsibles")
 }
@@ -45,10 +45,10 @@ model ExpenseCategory {
   id        String   @id @default(uuid())
   name      String
   createdAt DateTime @default(now())
-  createdBy String   @unique
   user      User     @relation(fields: [createdBy], references: [id])
+  createdBy String
 
-  expenseGroup ExpenseGroup?
+  ExpenseGroup ExpenseGroup[]
 
   @@map("expensecategories")
 }
@@ -61,14 +61,14 @@ model ExpenseGroup {
   paymentDate DateTime?
   createdAt   DateTime  @default(now())
 
-  createdBy String @unique
   user      User   @relation(fields: [createdBy], references: [id])
+  createdBy String
 
-  categoryId String          @unique
   category   ExpenseCategory @relation(fields: [categoryId], references: [id])
+  categoryId String
 
-  fixedExpense   FixedExpense?
-  monthlyExpende MonthlyExpense?
+  FixedExpense   FixedExpense[]
+  MonthlyExpense MonthlyExpense[]
 
   @@map("expensegroups")
 }
@@ -83,39 +83,39 @@ model FixedExpense {
   lastMonthProcessed Int
   createdAt          DateTime @default(now())
 
-  createdBy String @unique
   user      User   @relation(fields: [createdBy], references: [id])
+  createdBy String
 
-  responsibleId String       @unique
   responsible   Responsible  @relation(fields: [responsibleId], references: [id])
-  groupId       String       @unique
+  responsibleId String
   group         ExpenseGroup @relation(fields: [groupId], references: [id])
+  groupId       String
 
-  monthlyExpense MonthlyExpense?
+  MonthlyExpense MonthlyExpense[]
 
   @@map("fixedexpenses")
 }
 
 model MonthlyExpense {
-  id                 String  @id @default(uuid())
+  id                 String    @id @default(uuid())
   name               String
-  value              Decimal  
+  value              Decimal
   paymentDay         Int
   paymentMonth       Int
   totalInstallments  Int?
   currentInstallment Int?
-  isPaid             Boolean
+  isPaid             Boolean   @default(false)
   dateItWasPaid      DateTime?
 
   createdAt DateTime @default(now())
-  createdBy String   @unique
+  createdBy String
   user      User     @relation(fields: [createdBy], references: [id])
 
-  responsibleId  String        @unique
+  responsibleId  String
   responsible    Responsible   @relation(fields: [responsibleId], references: [id])
-  groupId        String        @unique
+  groupId        String
   group          ExpenseGroup  @relation(fields: [groupId], references: [id])
-  fixedExpenseId String?       @unique
+  fixedExpenseId String?
   fixedExpense   FixedExpense? @relation(fields: [fixedExpenseId], references: [id])
 
   @@map("monthlyexpenses")

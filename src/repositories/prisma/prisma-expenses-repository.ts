@@ -1,5 +1,4 @@
 import moment from "moment";
-import { moveMessagePortToContext } from "worker_threads";
 import { userSessionId } from "../../auth";
 import { prisma } from "../../prisma";
 import { ExpenseData, ExpenseQueryData, ExpensesRepository } from "../expenses-repository";
@@ -20,7 +19,7 @@ export class PrismaExpensesRepository implements ExpensesRepository {
         return expense;
     };
 
-    async create({ isFixed, name, value, responsibleId, groupId, paymentDate, totalInstallments, currentInstallment }: ExpenseData) {        
+    async create({ isFixed, name, value, responsibleId, groupId, paymentDay, totalInstallments, currentInstallment }: ExpenseData) {        
         
         if (isFixed) {
             const fixedExpense = await prisma.fixedExpense.create({
@@ -29,10 +28,10 @@ export class PrismaExpensesRepository implements ExpensesRepository {
                     value, 
                     responsibleId, 
                     groupId, 
-                    paymentDay: Number(moment(paymentDate).format("MM")), 
-                    lastMonthProcessed: Number(moment(paymentDate).format("MM")),
+                    paymentDay: paymentDay, 
+                    lastMonthProcessed: Number(moment().format("MM")),
                     totalInstallments, 
-                    currentInstallment,
+                    currentInstallment,                    
                     createdBy: userSessionId
                 }
             });
@@ -43,17 +42,30 @@ export class PrismaExpensesRepository implements ExpensesRepository {
                     value, 
                     responsibleId, 
                     groupId, 
-                    paymentDay: Number(moment(paymentDate).format("DD")), 
-                    paymentMonth: Number(moment(paymentDate).format("MM")),
-                    isPaid: false,
-                    dateItWasPaid: null,
-                    totalInstallments, 
-                    currentInstallment,
+                    paymentDay: paymentDay, 
+                    paymentMonth: Number(moment().format("MM")),
+                    isPaid: true,
+                    dateItWasPaid: null,                    
                     fixedExpenseId: fixedExpense.id,
                     createdBy: userSessionId
                 }
             });
-        }        
+        }  
+        else {
+            const monthlyExpense = await prisma.monthlyExpense.create({
+                data: {
+                    name, 
+                    value, 
+                    responsibleId, 
+                    groupId, 
+                    paymentDay: paymentDay, 
+                    paymentMonth: Number(moment().format("MM")),
+                    isPaid: false,
+                    dateItWasPaid: null,                                     
+                    createdBy: userSessionId
+                }
+            });    
+        }      
 
         return null;
     };
