@@ -5,7 +5,38 @@ import { ExpenseData, ExpenseQueryData, ExpensesRepository } from "../expenses-r
 
 export class PrismaExpensesRepository implements ExpensesRepository {    
     async find() {  
-        const expenses = await prisma.monthlyExpense.findMany();
+        const expenses = await prisma.monthlyExpense.findMany({
+            where: {
+                createdBy: userSessionId
+            },
+            select: {
+                id: true,
+                name: true,
+                value: true,
+                paymentDay: true,
+                paymentMonth: true,
+                totalInstallments: true,
+                currentInstallment: true,
+                isPaid: true,
+                dateItWasPaid: true,
+                responsible: {
+                    select: {
+                        id: true,
+                        name: true,
+                        color: true,
+                    }
+                },
+                group: {
+                    select: {
+                        id: true,
+                        name: true,
+                        color: true,
+                        type: true,
+                        paymentDate: true                        
+                    }
+                },
+            }            
+        });
         return expenses;        
     };
 
@@ -13,7 +44,34 @@ export class PrismaExpensesRepository implements ExpensesRepository {
         const expense = await prisma.monthlyExpense.findUnique({
             where: {
                 id: id
-            }
+            },
+            select: {
+                id: true,
+                name: true,
+                value: true,
+                paymentDay: true,
+                paymentMonth: true,
+                totalInstallments: true,
+                currentInstallment: true,
+                isPaid: true,
+                dateItWasPaid: true,
+                responsible: {
+                    select: {
+                        id: true,
+                        name: true,
+                        color: true,
+                    }
+                },
+                group: {
+                    select: {
+                        id: true,
+                        name: true,
+                        color: true,
+                        type: true,
+                        paymentDate: true                        
+                    }
+                },
+            }    
         });
 
         return expense;
