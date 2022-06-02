@@ -55,22 +55,9 @@ export class PrismaExpensesRepository implements ExpensesRepository {
                 currentInstallment: true,
                 isPaid: true,
                 dateItWasPaid: true,
-                responsible: {
-                    select: {
-                        id: true,
-                        name: true,
-                        color: true,
-                    }
-                },
-                group: {
-                    select: {
-                        id: true,
-                        name: true,
-                        color: true,
-                        type: true,
-                        paymentDate: true                        
-                    }
-                },
+                responsibleId: true,
+                groupId: true,
+                fixedExpenseId: true
             }    
         });
 
@@ -173,6 +160,26 @@ export class PrismaExpensesRepository implements ExpensesRepository {
     };
 
     async processExpenses() {
+        const actualMonth = moment().day();
 
+        const fixedExpenses = await prisma.fixedExpense.findMany({
+            where: {
+                createdBy: userSessionId
+            }
+        })
+
+        fixedExpenses.map(async (item) => {
+            const monthlyExpense = await prisma.monthlyExpense.findFirst({
+                where: {
+                    createdBy: userSessionId,
+                    paymentMonth: actualMonth,
+                    fixedExpenseId: item.id
+                }
+            });
+
+            if (!monthlyExpense) {
+                // mágica acontece
+            }
+        })
     };
 }
