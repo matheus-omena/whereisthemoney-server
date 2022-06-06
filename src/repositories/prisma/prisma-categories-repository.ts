@@ -4,7 +4,12 @@ import { CategoriesRepository, CategoryData } from "../categories-repository";
 
 export class PrismaCategoriesRepository implements CategoriesRepository {    
     async find() {  
-        const categories = await prisma.expenseCategory.findMany();
+        const categories = await prisma.expenseCategory.findMany({
+            select: {
+                id: true,
+                name: true
+            }
+        });
         return categories;
     };
 
@@ -12,6 +17,10 @@ export class PrismaCategoriesRepository implements CategoriesRepository {
         const category = await prisma.expenseCategory.findUnique({
             where: {
                 id: id
+            },
+            select: {
+                id: true,
+                name: true
             }
         });
 
@@ -23,6 +32,19 @@ export class PrismaCategoriesRepository implements CategoriesRepository {
             data: {
                 name,
                 createdBy: userSessionId
+            }
+        })
+
+        return category;
+    };
+
+    async update(id: string, { name }: CategoryData) {
+        const category = await prisma.expenseCategory.update({
+            where: {
+                id: id
+            },
+            data: {
+                name                
             }
         })
 

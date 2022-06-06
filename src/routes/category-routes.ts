@@ -5,6 +5,7 @@ import { CreateCategoryUseCase } from "../use-cases/categories/create-category-u
 import { DeleteCategoryUseCase } from "../use-cases/categories/delete-category-use-case";
 import { FindCategoriesUseCase } from "../use-cases/categories/find-categories-use-case";
 import { FindCategoryByIdUseCase } from "../use-cases/categories/find-category-by-id-use-case";
+import { UpdateCategoryUseCase } from "../use-cases/categories/update-category-use-case";
 
 export const categoryRoutes = express.Router();
 
@@ -14,7 +15,7 @@ categoryRoutes.get('/', validateToken, async (req, res) => {
 
     const resp = await findCategoriesUseCase.execute();
 
-    return res.status(201).json({ data: resp });
+    return res.status(201).send(resp);
 })
 
 categoryRoutes.get('/:id', validateToken, async (req, res) => {
@@ -28,7 +29,7 @@ categoryRoutes.get('/:id', validateToken, async (req, res) => {
 })
 
 categoryRoutes.post('/', validateToken, async (req, res) => {    
-    const { name, color } = req.body;
+    const { name } = req.body;
 
     const prismaCategoriesRepository = new PrismaCategoriesRepository();
     const createCategoryUseCase = new CreateCategoryUseCase(prismaCategoriesRepository);
@@ -36,6 +37,18 @@ categoryRoutes.post('/', validateToken, async (req, res) => {
     const resp = await createCategoryUseCase.execute({ name })
 
     return res.status(201).json({ data: resp, message: 'Categoria criada com sucesso.' });
+})
+
+categoryRoutes.put('/:id', validateToken, async (req, res) => {    
+    const { id } = req.params;
+    const { name } = req.body;
+
+    const prismaCategoriesRepository = new PrismaCategoriesRepository();
+    const updateCategoryUseCase = new UpdateCategoryUseCase(prismaCategoriesRepository);
+
+    const resp = await updateCategoryUseCase.execute(id, { name })
+
+    return res.status(201).json({ data: resp, message: 'Categoria atualizada com sucesso.' });
 })
 
 categoryRoutes.delete('/:id', validateToken, async (req, res) => {
