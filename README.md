@@ -20,9 +20,9 @@
 
 ## Tecnologias
 
-<p align="justify">
-  O My Finances é uma solução para controle e monitoramento de despesas, tendo como principal diferencial o agrupamento e a atribuição de responsáveis as despesas. Essa é uma solução prática para, por exemplo, dividir as contas de casa por 2 ou até mais pessoas!
-</p>
+* [NodeJS](https://nodejs.org/en/) + [Express](https://expressjs.com/pt-br/) + Typescript
+* [Prisma ORM](https://www.prisma.io/) e [MySQL](https://www.mysql.com/)
+* Autenticação com [JWT](https://jwt.io/introduction)
 
 ## Pré-requisitos
 
@@ -54,8 +54,6 @@ Execute o projeto.
 npm run dev
 ```
 
-## Desenvolvedores/Contribuintes :octocat:
+## Desenvolvedores/Contribuintes :computer:
 
 <img src="https://avatars.githubusercontent.com/u/82099869?v=4" width=115 style="border-radius: 50%"><br><sub>[Matheus Omena](https://github.com/matheus-omena)</sub>
-
-Copyright :copyright: 2022 - My Finances
