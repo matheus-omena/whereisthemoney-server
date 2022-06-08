@@ -22,7 +22,8 @@
 
 * [NodeJS](https://nodejs.org/en/) + [Express](https://expressjs.com/pt-br/) + Typescript
 * [Prisma ORM](https://www.prisma.io/) e [MySQL](https://www.mysql.com/)
-* Autenticação com [JWT](https://jwt.io/introduction)
+* Autenticação [JWT](https://jwt.io/introduction)
+* Conceito SOLID
 
 ## Pré-requisitos
 
