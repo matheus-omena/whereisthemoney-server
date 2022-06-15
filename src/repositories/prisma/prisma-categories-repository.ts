@@ -7,7 +7,8 @@ export class PrismaCategoriesRepository implements CategoriesRepository {
         const categories = await prisma.expenseCategory.findMany({
             select: {
                 id: true,
-                name: true
+                name: true,
+                createdAt: true,                
             }
         });
         return categories;
@@ -20,7 +21,8 @@ export class PrismaCategoriesRepository implements CategoriesRepository {
             },
             select: {
                 id: true,
-                name: true
+                name: true,
+                createdAt: true,
             }
         });
 
