@@ -5,6 +5,7 @@ import { CreateResponsibleUseCase } from "../use-cases/responsibles/create-respo
 import { DeleteResponsibleUseCase } from "../use-cases/responsibles/delete-responsible-use-case";
 import { FindResponsibleByIdUseCase } from "../use-cases/responsibles/find-responsible-by-id-use-case";
 import { FindResponsiblesUseCase } from "../use-cases/responsibles/find-responsibles-use-case";
+import { UpdateResponsibleUseCase } from "../use-cases/responsibles/update-responsible-use-case";
 
 export const responsibleRoutes = express.Router();
 
@@ -14,7 +15,7 @@ responsibleRoutes.get('/', validateToken, async (req, res) => {
 
     const resp = await findResponsiblesUseCase.execute();
 
-    return res.status(201).json({ data: resp });
+    return res.status(201).send(resp);
 })
 
 responsibleRoutes.get('/:id', validateToken, async (req, res) => {
@@ -39,6 +40,21 @@ responsibleRoutes.post('/', validateToken, async (req, res) => {
     })
 
     return res.status(201).json({ data: resp, message: 'Responsável criado com sucesso.' });
+})
+
+responsibleRoutes.put('/:id', validateToken, async (req, res) => { 
+    const { id } = req.params;   
+    const { name, color } = req.body;
+
+    const prismaResponsiblesRepository = new PrismaResponsiblesRepository();
+    const updateResponsibleUseCase = new UpdateResponsibleUseCase(prismaResponsiblesRepository);
+
+    const resp = await updateResponsibleUseCase.execute(id, {
+        name,
+        color
+    })
+
+    return res.status(201).json({ data: resp, message: 'Responsável atualizado com sucesso.' });
 })
 
 responsibleRoutes.delete('/:id', validateToken, async (req, res) => {

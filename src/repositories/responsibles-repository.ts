@@ -7,5 +7,6 @@ export interface ResponsiblesRepository {
     find: () => Promise<ResponsibleData[] | any>;
     findById: (id: string) => Promise<ResponsibleData | any>;
     create: (data: ResponsibleData) => Promise<ResponsibleData | any>;
+    update: (id: string, data: ResponsibleData) => Promise<ResponsibleData | any>;
     delete: (id: string) => Promise<void>;
 }
