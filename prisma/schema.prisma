@@ -54,12 +54,12 @@ model ExpenseCategory {
 }
 
 model ExpenseGroup {
-  id          String    @id @default(uuid())
-  name        String
-  color       String
-  type        Int
-  paymentDate DateTime?
-  createdAt   DateTime  @default(now())
+  id         String   @id @default(uuid())
+  name       String
+  color      String
+  type       Int
+  paymentDay Int?
+  createdAt  DateTime @default(now())
 
   user      User   @relation(fields: [createdBy], references: [id])
   createdBy String

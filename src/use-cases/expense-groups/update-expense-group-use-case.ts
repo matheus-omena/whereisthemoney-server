@@ -1,11 +1,10 @@
 import { ExpenseGroupsRepository } from "../../repositories/expense-groups-repository";
 
-export interface UpdateExpenseGroupUseCaseRequest {
-    id: string;
+export interface UpdateExpenseGroupUseCaseRequest {    
     name: string;    
     color: string;
     type: number;
-    paymentDate: Date;
+    paymentDay?: number;
     categoryId: string; 
 }
 
@@ -14,15 +13,14 @@ export class UpdateExpenseGroupUseCase {
         private groupsRepository: ExpenseGroupsRepository
     ) {}
 
-    async execute(request: UpdateExpenseGroupUseCaseRequest) {
-        const { id, name, color, type, paymentDate, categoryId } = request;        
+    async execute(id: string, request: UpdateExpenseGroupUseCaseRequest) {
+        const { name, color, type, paymentDay, categoryId } = request;        
 
-        const group = await this.groupsRepository.update({
-            id,
+        const group = await this.groupsRepository.update(id, {        
             name,
             color,
             type,
-            paymentDate,
+            paymentDay,
             categoryId
         })
 

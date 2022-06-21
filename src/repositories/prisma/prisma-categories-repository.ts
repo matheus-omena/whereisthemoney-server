@@ -9,6 +9,9 @@ export class PrismaCategoriesRepository implements CategoriesRepository {
                 id: true,
                 name: true,
                 createdAt: true,                
+            },
+            where: {
+                createdBy: userSessionId
             }
         });
         return categories;

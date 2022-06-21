@@ -10,6 +10,9 @@ export class PrismaResponsiblesRepository implements ResponsiblesRepository {
                 name: true,
                 color: true,
                 createdAt: true,                
+            },
+            where: {
+                createdBy: userSessionId
             }
         });
         return responsibles;

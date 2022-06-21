@@ -6,9 +6,6 @@ import { ExpenseData, ExpenseQueryData, ExpensesRepository } from "../expenses-r
 export class PrismaExpensesRepository implements ExpensesRepository {    
     async find() {  
         const expenses = await prisma.monthlyExpense.findMany({
-            where: {
-                createdBy: userSessionId
-            },
             select: {
                 id: true,
                 name: true,
@@ -32,10 +29,13 @@ export class PrismaExpensesRepository implements ExpensesRepository {
                         name: true,
                         color: true,
                         type: true,
-                        paymentDate: true                        
+                        paymentDay: true                        
                     }
                 },
-            }            
+            },
+            where: {
+                createdBy: userSessionId
+            }           
         });
         return expenses;        
     };

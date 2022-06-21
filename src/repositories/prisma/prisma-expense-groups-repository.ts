@@ -4,7 +4,22 @@ import { ExpenseGroupData, ExpenseGroupQueryData, ExpenseGroupsRepository } from
 
 export class PrismaExpenseGroupsRepository implements ExpenseGroupsRepository {    
     async find() {  
-        const groups = await prisma.expenseGroup.findMany();
+        const groups = await prisma.expenseGroup.findMany({
+            select: {
+                name: true,
+                color: true,
+                type: true,
+                paymentDay: true,
+                category: {
+                    select: {
+                        name: true
+                    }                    
+                }
+            },
+            where: {
+                createdBy: userSessionId
+            }
+        });
         return groups;
     };
 
@@ -18,13 +33,13 @@ export class PrismaExpenseGroupsRepository implements ExpenseGroupsRepository {
         return group;
     };
 
-    async create({ name, color, type, paymentDate, categoryId }: ExpenseGroupData) {
+    async create({ name, color, type, paymentDay, categoryId }: ExpenseGroupData) {
         const group = await prisma.expenseGroup.create({
             data: {
                 name,
                 color,
                 type,
-                paymentDate,
+                paymentDay,
                 categoryId,
                 createdBy: userSessionId
             }
@@ -33,7 +48,7 @@ export class PrismaExpenseGroupsRepository implements ExpenseGroupsRepository {
         return group;
     };
 
-    async update({ id, name, color, type, paymentDate, categoryId }: ExpenseGroupQueryData) {
+    async update(id: string, { name, color, type, paymentDay, categoryId }: ExpenseGroupData) {
         const group = await prisma.expenseGroup.update({
             where: {
                 id: id
@@ -42,7 +57,7 @@ export class PrismaExpenseGroupsRepository implements ExpenseGroupsRepository {
                 name,
                 color,
                 type,
-                paymentDate,
+                paymentDay,
                 categoryId,
                 createdBy: userSessionId
             }
