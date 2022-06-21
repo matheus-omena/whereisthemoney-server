@@ -1,11 +1,12 @@
 import { userSessionId } from "../../auth";
 import { prisma } from "../../prisma";
-import { ExpenseGroupData, ExpenseGroupQueryData, ExpenseGroupsRepository } from "../expense-groups-repository";
+import { ExpenseGroupData, ExpenseGroupsRepository } from "../expense-groups-repository";
 
 export class PrismaExpenseGroupsRepository implements ExpenseGroupsRepository {    
     async find() {  
         const groups = await prisma.expenseGroup.findMany({
             select: {
+                id: true,
                 name: true,
                 color: true,
                 type: true,
@@ -25,6 +26,19 @@ export class PrismaExpenseGroupsRepository implements ExpenseGroupsRepository {
 
     async findById(id: string) {  
         const group = await prisma.expenseGroup.findUnique({
+            select: {
+                id: true,
+                name: true,
+                color: true,
+                type: true,
+                paymentDay: true,
+                category: {
+                    select: {
+                        id: true,
+                        name: true
+                    }                    
+                }
+            },
             where: {
                 id: id
             }
