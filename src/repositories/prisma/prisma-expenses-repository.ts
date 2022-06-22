@@ -64,6 +64,41 @@ export class PrismaExpensesRepository implements ExpensesRepository {
         return expense;
     };
 
+    async findByGroup(groupId: string, month: number) {  
+        const expenses = await prisma.monthlyExpense.findMany({
+            where: {
+                groupId: groupId,
+                paymentMonth: month
+            },
+            select: {
+                id: true,
+                name: true,
+                value: true,
+                paymentDay: true,
+                paymentMonth: true,
+                totalInstallments: true,
+                currentInstallment: true,
+                isPaid: true,
+                dateItWasPaid: true,
+                responsible: {  
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                },
+                group: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                },
+                fixedExpenseId: true
+            }    
+        });
+
+        return expenses;
+    };
+
     async create({ isFixed, name, value, responsibleId, groupId, paymentDay, totalInstallments, currentInstallment }: ExpenseData) {
         if (isFixed) {
             const fixedExpense = await prisma.fixedExpense.create({

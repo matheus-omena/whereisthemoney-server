@@ -4,6 +4,7 @@ import { PrismaExpensesRepository } from "../repositories/prisma/prisma-expenses
 import { CreateExpenseUseCase } from "../use-cases/expenses/create-expense-use-case";
 import { DeleteExpenseUseCase } from "../use-cases/expenses/delete-expense-use-case";
 import { FindExpenseByIdUseCase } from "../use-cases/expenses/find-expense-by-id-use-case";
+import { FindExpensesByGroupUseCase } from "../use-cases/expenses/find-expenses-by-group-use-case";
 import { FindExpensesUseCase } from "../use-cases/expenses/find-expenses-use-case";
 
 export const expenseRoutes = express.Router();
@@ -15,6 +16,16 @@ expenseRoutes.get('/', validateToken, async (req, res) => {
     const resp = await findExpensesUseCase.execute();
 
     return res.status(201).json({ data: resp });
+})
+
+expenseRoutes.get('/bygroup', validateToken, async (req, res) => {    
+    const { groupId, month } = req.body;
+    const prismaExpensesRepository = new PrismaExpensesRepository();
+    const findExpensesByGroupUseCase = new FindExpensesByGroupUseCase(prismaExpensesRepository);
+
+    const resp = await findExpensesByGroupUseCase.execute(groupId, month);
+
+    return res.status(201).send(resp);
 })
 
 expenseRoutes.get('/:id', validateToken, async (req, res) => {
