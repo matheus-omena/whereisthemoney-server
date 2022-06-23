@@ -5,6 +5,7 @@ import { CreateExpenseGroupUseCase } from "../use-cases/expense-groups/create-ex
 import { DeleteExpenseGroupUseCase } from "../use-cases/expense-groups/delete-expense-group-use-case";
 import { FindExpenseGroupByIdUseCase } from "../use-cases/expense-groups/find-expense-group-by-id-use-case";
 import { FindExpenseGroupsUseCase } from "../use-cases/expense-groups/find-expense-groups-use-case";
+import { FindExpenseGroupsWithGroupedExpensesUseCase } from "../use-cases/expense-groups/find-expense-groups-with-grouped-expenses-use-case";
 import { UpdateExpenseGroupUseCase } from "../use-cases/expense-groups/update-expense-group-use-case";
 
 export const expenseGroupRoutes = express.Router();
@@ -18,6 +19,15 @@ expenseGroupRoutes.get('/', validateToken, async (req, res) => {
     return res.status(201).send(resp);
 })
 
+expenseGroupRoutes.get('/with-grouped-expenses', validateToken, async (req, res) => {
+    const { month } = req.body;
+    const prismaExpenseGroupsRepository = new PrismaExpenseGroupsRepository();
+    const findExpenseGroupsWithGroupedExpensesUseCase = new FindExpenseGroupsWithGroupedExpensesUseCase(prismaExpenseGroupsRepository);
+
+    const resp = await findExpenseGroupsWithGroupedExpensesUseCase.execute(month);
+    return res.status(201).send(resp);
+})
+
 expenseGroupRoutes.get('/:id', validateToken, async (req, res) => {
     const { id } = req.params;
     const prismaExpenseGroupsRepository = new PrismaExpenseGroupsRepository();
@@ -28,7 +38,7 @@ expenseGroupRoutes.get('/:id', validateToken, async (req, res) => {
     return res.status(201).send(resp);
 })
 
-expenseGroupRoutes.post('/', validateToken, async (req, res) => {    
+expenseGroupRoutes.post('/', validateToken, async (req, res) => {
     const { name, color, type, paymentDay, categoryId } = req.body;
 
     const prismaExpenseGroupsRepository = new PrismaExpenseGroupsRepository();
@@ -45,14 +55,14 @@ expenseGroupRoutes.post('/', validateToken, async (req, res) => {
     return res.status(201).json({ data: resp, message: 'Grupo de despesas criado com sucesso.' });
 })
 
-expenseGroupRoutes.put('/:id', validateToken, async (req, res) => {    
+expenseGroupRoutes.put('/:id', validateToken, async (req, res) => {
     const { id } = req.params;
     const { name, color, type, paymentDay, categoryId } = req.body;
 
     const prismaExpenseGroupsRepository = new PrismaExpenseGroupsRepository();
     const updateExpenseGroupUseCase = new UpdateExpenseGroupUseCase(prismaExpenseGroupsRepository);
 
-    const resp = await updateExpenseGroupUseCase.execute(id, {        
+    const resp = await updateExpenseGroupUseCase.execute(id, {
         name,
         color,
         type,
