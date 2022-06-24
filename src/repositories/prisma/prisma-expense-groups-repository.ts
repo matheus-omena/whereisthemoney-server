@@ -33,6 +33,9 @@ export class PrismaExpenseGroupsRepository implements ExpenseGroupsRepository {
             },
             where: {
                 createdBy: userSessionId
+            },
+            orderBy: {
+                name: 'asc'
             }
         });    
     
