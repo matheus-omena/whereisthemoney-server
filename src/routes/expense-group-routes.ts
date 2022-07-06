@@ -19,7 +19,7 @@ expenseGroupRoutes.get('/', validateToken, async (req, res) => {
     return res.status(201).send(resp);
 })
 
-expenseGroupRoutes.get('/with-grouped-expenses/month/:month', validateToken, async (req, res) => {
+expenseGroupRoutes.get('/balance/month/:month', validateToken, async (req, res) => {
     const { month } = req.params;
     const prismaExpenseGroupsRepository = new PrismaExpenseGroupsRepository();
     const findExpenseGroupsWithGroupedExpensesUseCase = new FindExpenseGroupsWithGroupedExpensesUseCase(prismaExpenseGroupsRepository);
