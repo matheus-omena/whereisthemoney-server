@@ -73,6 +73,7 @@ export class PrismaExpenseGroupsRepository implements ExpenseGroupsRepository {
                     name: item.name,
                     color: item.color,
                     totalValue: Number(total),
+                    totalPaid: Number(total) - Number(notPaid),
                     paymentPercentual: Number(100 - ((Number(notPaid) * 100) / Number(total)))
                 }
             )    
