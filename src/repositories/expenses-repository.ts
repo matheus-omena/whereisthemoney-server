@@ -15,9 +15,19 @@ export interface ExpenseData {
     value: number;
     responsibleId: string;
     groupId: string;
-    paymentDay: number;    
+    paymentDay: number;     
     totalInstallments?: number;
     currentInstallment?: number;
+    updateAllLinkedExpenses?: boolean;
+}
+
+export interface UpdateExpenseData {    
+    name: string;    
+    value: number;
+    responsibleId: string;
+    groupId: string;
+    paymentDay: number;        
+    updateAllLinkedExpenses?: boolean;
 }
 
 export interface ExpensesRepository {
@@ -25,7 +35,7 @@ export interface ExpensesRepository {
     findById: (id: string) => Promise<any>;
     findByGroup: (groupId: string, month: number) => Promise<any[]>;
     create: (data: ExpenseData) => Promise<ExpenseQueryData | any>;
-    update: (data: ExpenseQueryData) => Promise<any>;
+    update: (id: string, data: UpdateExpenseData) => Promise<any>;
     delete: (id: string, deleteLinkedFixedExpense: boolean) => Promise<void>;
     processExpenses: () => Promise<void>;
 }

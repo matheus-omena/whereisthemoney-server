@@ -1,7 +1,7 @@
 import moment from "moment";
 import { userSessionId } from "../../auth";
 import { prisma } from "../../prisma";
-import { ExpenseData, ExpenseQueryData, ExpensesRepository } from "../expenses-repository";
+import { ExpenseData, ExpensesRepository, UpdateExpenseData } from "../expenses-repository";
 
 export class PrismaExpensesRepository implements ExpensesRepository {    
     async find() {  
@@ -157,35 +157,59 @@ export class PrismaExpensesRepository implements ExpensesRepository {
         }
     };
 
-    async update(data: ExpenseQueryData) {
-        // const group = await prisma.expenseGroup.update({
-        //     where: {
-        //         id: id
-        //     },
-        //     data: {
-        //         name,
-        //         color,
-        //         type,
-        //         paymentDate,
-        //         categoryId,
-        //         createdBy: userSessionId
-        //     }
-        // })
+    async update(id: string, { name, value, responsibleId, groupId, paymentDay, updateAllLinkedExpenses }: UpdateExpenseData) {
+        const expense = await prisma.monthlyExpense.findUnique({
+            where: {
+                id: id
+            },
+            select: {
+                id: true,                
+                totalInstallments: true,
+                currentInstallment: true,
+                isPaid: true,
+                dateItWasPaid: true,
+                responsibleId: true,
+                groupId: true,
+                fixedExpenseId: true
+            }    
+        });
 
-        // return group;[]
+        await prisma.monthlyExpense.update({
+            data: {
+                name, 
+                value, 
+                responsibleId, 
+                groupId, 
+                paymentDay,                
+            },
+            where: {
+                id: id
+            }
+        });
+
+        if (updateAllLinkedExpenses && expense?.fixedExpenseId) {
+            await prisma.fixedExpense.update({
+                data: {
+                    name, 
+                    value, 
+                    responsibleId, 
+                    groupId, 
+                    paymentDay,                
+                },
+                where: {
+                    id: expense?.fixedExpenseId
+                }
+            });
+        }
         return null;
     };
 
-    async delete(id: string, deleteLinkedFixedExpense: boolean) {
-        debugger;
+    async delete(id: string, deleteLinkedFixedExpense: boolean) {        
         const expense = await prisma.monthlyExpense.findUnique({
             where: {
                 id: id
             }
         })
-
-        console.log("deleteLinkedFixedExpense", deleteLinkedFixedExpense);
-        console.log("expense", expense);
 
         if (expense) {            
             await prisma.monthlyExpense.delete({

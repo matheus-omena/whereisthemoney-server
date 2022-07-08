@@ -6,6 +6,7 @@ import { DeleteExpenseUseCase } from "../use-cases/expenses/delete-expense-use-c
 import { FindExpenseByIdUseCase } from "../use-cases/expenses/find-expense-by-id-use-case";
 import { FindExpensesByGroupUseCase } from "../use-cases/expenses/find-expenses-by-group-use-case";
 import { FindExpensesUseCase } from "../use-cases/expenses/find-expenses-use-case";
+import { UpdateExpenseUseCase } from "../use-cases/expenses/update-expense-use-case";
 
 export const expenseRoutes = express.Router();
 
@@ -63,23 +64,24 @@ expenseRoutes.post('/', validateToken, async (req, res) => {
     return res.status(201).json({ message: 'Despesa criada com sucesso.' });
 })
 
-// expenseRoutes.put('/', validateToken, async (req, res) => {    
-//     const { id, name, color, type, paymentDate, categoryId } = req.body;
+expenseRoutes.put('/:id', validateToken, async (req, res) => {    
+    const { id } = req.params;
+    const { name, value, responsibleId, groupId, paymentDay, updateAllLinkedExpenses } = req.body;
 
-//     const prismaExpenseGroupsRepository = new PrismaExpenseGroupsRepository();
-//     const updateExpenseGroupUseCase = new UpdateExpenseGroupUseCase(prismaExpenseGroupsRepository);
+    const prismaExpenseGroupsRepository = new PrismaExpensesRepository();
+    const updateExpenseGroupUseCase = new UpdateExpenseUseCase(prismaExpenseGroupsRepository);
 
-//     const resp = await updateExpenseGroupUseCase.execute({
-//         id,
-//         name,
-//         color,
-//         type,
-//         paymentDate,
-//         categoryId
-//     })
+    const resp = await updateExpenseGroupUseCase.execute(id, {        
+        name,
+        value, 
+        responsibleId, 
+        groupId, 
+        paymentDay, 
+        updateAllLinkedExpenses
+    })
 
-//     return res.status(201).json({ message: 'Grupo de despesas atualizado com sucesso.' });
-// })
+    return res.status(201).json({ message: 'Despesa atualizada com sucesso.' });
+})
 
 expenseRoutes.delete('/:id', validateToken, async (req, res) => {
     const { id } = req.params;
