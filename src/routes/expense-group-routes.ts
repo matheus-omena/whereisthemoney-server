@@ -44,15 +44,19 @@ expenseGroupRoutes.post('/', validateToken, async (req, res) => {
     const prismaExpenseGroupsRepository = new PrismaExpenseGroupsRepository();
     const createExpenseGroupUseCase = new CreateExpenseGroupUseCase(prismaExpenseGroupsRepository);
 
-    const resp = await createExpenseGroupUseCase.execute({
+    await createExpenseGroupUseCase.execute({
         name,
         color,
         type,
         paymentDay,
         categoryId
+    }).then(resp => {
+        return res.status(201).json({ data: resp, message: 'Grupo de despesas criado com sucesso.' })
+    }).catch(error => {
+        return res.status(500).json({ data: error, message: 'Erro ao criar grupo de despesas' })
     })
 
-    return res.status(201).json({ data: resp, message: 'Grupo de despesas criado com sucesso.' });
+
 })
 
 expenseGroupRoutes.put('/:id', validateToken, async (req, res) => {

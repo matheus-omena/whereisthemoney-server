@@ -55,8 +55,18 @@ export class PrismaExpensesRepository implements ExpensesRepository {
                 currentInstallment: true,
                 isPaid: true,
                 dateItWasPaid: true,
-                responsibleId: true,
-                groupId: true,
+                responsible: {
+                    select: {
+                        id: true,
+                        name: true,
+                    }
+                },
+                group: {
+                    select: {
+                        id: true,
+                        name: true,
+                    }
+                },
                 fixedExpenseId: true
             }    
         });
