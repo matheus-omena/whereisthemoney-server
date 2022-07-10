@@ -133,7 +133,7 @@ export class PrismaExpensesRepository implements ExpensesRepository {
                     groupId, 
                     paymentDay: paymentDay, 
                     paymentMonth: Number(moment().format("MM")),
-                    isPaid: true,
+                    isPaid: false,
                     dateItWasPaid: null,                    
                     fixedExpenseId: fixedExpense.id,
                     createdBy: userSessionId
