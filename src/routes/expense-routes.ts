@@ -6,12 +6,13 @@ import { DeleteExpenseUseCase } from "../use-cases/expenses/delete-expense-use-c
 import { FindExpenseByIdUseCase } from "../use-cases/expenses/find-expense-by-id-use-case";
 import { FindExpensesByGroupUseCase } from "../use-cases/expenses/find-expenses-by-group-use-case";
 import { FindExpensesUseCase } from "../use-cases/expenses/find-expenses-use-case";
+import { ProcessNextMonthExpensesUseCase } from "../use-cases/expenses/process-next-month-expense-use-case";
 import { UpdateExpenseUseCase } from "../use-cases/expenses/update-expense-use-case";
 
 export const expenseRoutes = express.Router();
+const prismaExpensesRepository = new PrismaExpensesRepository();
 
 expenseRoutes.get('/', validateToken, async (req, res) => {
-    const prismaExpensesRepository = new PrismaExpensesRepository();
     const findExpensesUseCase = new FindExpensesUseCase(prismaExpensesRepository);
 
     const resp = await findExpensesUseCase.execute();
@@ -19,9 +20,8 @@ expenseRoutes.get('/', validateToken, async (req, res) => {
     return res.status(201).json({ data: resp });
 })
 
-expenseRoutes.get('/bygroup/:groupId/month/:month', validateToken, async (req, res) => {    
+expenseRoutes.get('/bygroup/:groupId/month/:month', validateToken, async (req, res) => {
     const { groupId, month } = req.params;
-    const prismaExpensesRepository = new PrismaExpensesRepository();
     const findExpensesByGroupUseCase = new FindExpensesByGroupUseCase(prismaExpensesRepository);
 
     const resp = await findExpensesByGroupUseCase.execute(groupId, Number(month));
@@ -31,7 +31,6 @@ expenseRoutes.get('/bygroup/:groupId/month/:month', validateToken, async (req, r
 
 expenseRoutes.get('/:id', validateToken, async (req, res) => {
     const { id } = req.params;
-    const prismaExpensesRepository = new PrismaExpensesRepository();
     const findExpenseByIdUseCase = new FindExpenseByIdUseCase(prismaExpensesRepository);
 
     const resp = await findExpenseByIdUseCase.execute(id);
@@ -39,57 +38,65 @@ expenseRoutes.get('/:id', validateToken, async (req, res) => {
     return res.status(201).json({ data: resp });
 })
 
-expenseRoutes.post('/', validateToken, async (req, res) => {    
+expenseRoutes.post('/', validateToken, async (req, res) => {
     const { isFixed, name, value, responsibleId, groupId, paymentDay, totalInstallments, currentInstallment } = req.body;
 
-    const prismaExpensesRepository = new PrismaExpensesRepository();
     const createExpenseUseCase = new CreateExpenseUseCase(prismaExpensesRepository);
 
     try {
         await createExpenseUseCase.execute({
-            isFixed, 
-            name, 
-            value, 
-            responsibleId, 
-            groupId, 
-            paymentDay, 
-            totalInstallments, 
+            isFixed,
+            name,
+            value,
+            responsibleId,
+            groupId,
+            paymentDay,
+            totalInstallments,
             currentInstallment
         });
-    }    
+    }
     catch (e) {
-        return res.status(500).json({ message: 'Problema ao criar despesa.', e });    
+        return res.status(500).json({ message: 'Problema ao criar despesa.', e });
     }
 
     return res.status(201).json({ message: 'Despesa criada com sucesso.' });
 })
 
-expenseRoutes.put('/:id', validateToken, async (req, res) => {    
+expenseRoutes.put('/processNextMonthExpenses', validateToken, async (req, res) => {
+    const processNextMonthExpenses = new ProcessNextMonthExpensesUseCase(prismaExpensesRepository);
+
+    await processNextMonthExpenses.execute()
+        .then(resp => {
+            return res.status(201).json({ message: 'Despesas processadas com sucesso.' })
+        })
+        .catch(error => {
+            return res.status(500).json({ data: error, message: 'Erro ao processar despesas' })
+        })
+})
+
+expenseRoutes.put('/:id', validateToken, async (req, res) => {
     const { id } = req.params;
     const { name, value, responsibleId, groupId, paymentDay, updateAllLinkedExpenses } = req.body;
 
-    const prismaExpenseGroupsRepository = new PrismaExpensesRepository();
-    const updateExpenseGroupUseCase = new UpdateExpenseUseCase(prismaExpenseGroupsRepository);
+    const updateExpensesUseCase = new UpdateExpenseUseCase(prismaExpensesRepository);
 
-    const resp = await updateExpenseGroupUseCase.execute(id, {        
+    const resp = await updateExpensesUseCase.execute(id, {
         name,
-        value, 
-        responsibleId, 
-        groupId, 
-        paymentDay, 
+        value,
+        responsibleId,
+        groupId,
+        paymentDay,
         updateAllLinkedExpenses
     })
 
     return res.status(201).json({ message: 'Despesa atualizada com sucesso.' });
 })
 
-expenseRoutes.delete('/:id', validateToken, async (req, res) => {
-    const { id } = req.params;
-    const { deleteLinkedFixedExpense } = req.body;
-    const prismaExpensesRepository = new PrismaExpensesRepository();
+expenseRoutes.delete('/:id/deleteLinkedFixedExpense/:deleteLinkedFixedExpense', validateToken, async (req, res) => {
+    const { id, deleteLinkedFixedExpense } = req.params;
     const deleteExpenseUseCase = new DeleteExpenseUseCase(prismaExpensesRepository);
 
-    await deleteExpenseUseCase.execute(id, deleteLinkedFixedExpense);
+    await deleteExpenseUseCase.execute(id, deleteLinkedFixedExpense === "true");
 
-    return res.status(201).send();
+    return res.status(201).json({ params: req.params });
 })

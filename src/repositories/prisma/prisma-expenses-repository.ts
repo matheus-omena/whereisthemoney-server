@@ -3,8 +3,8 @@ import { userSessionId } from "../../auth";
 import { prisma } from "../../prisma";
 import { ExpenseData, ExpensesRepository, UpdateExpenseData } from "../expenses-repository";
 
-export class PrismaExpensesRepository implements ExpensesRepository {    
-    async find() {  
+export class PrismaExpensesRepository implements ExpensesRepository {
+    async find() {
         const expenses = await prisma.monthlyExpense.findMany({
             select: {
                 id: true,
@@ -29,18 +29,18 @@ export class PrismaExpensesRepository implements ExpensesRepository {
                         name: true,
                         color: true,
                         type: true,
-                        paymentDay: true                        
+                        paymentDay: true
                     }
                 },
             },
             where: {
                 createdBy: userSessionId
-            }           
+            }
         });
-        return expenses;        
+        return expenses;
     };
 
-    async findById(id: string) {  
+    async findById(id: string) {
         const expense = await prisma.monthlyExpense.findUnique({
             where: {
                 id: id
@@ -68,13 +68,13 @@ export class PrismaExpensesRepository implements ExpensesRepository {
                     }
                 },
                 fixedExpenseId: true
-            }    
+            }
         });
 
         return expense;
     };
 
-    async findByGroup(groupId: string, month: number) {  
+    async findByGroup(groupId: string, month: number) {
         const expenses = await prisma.monthlyExpense.findMany({
             where: {
                 groupId: groupId,
@@ -90,7 +90,7 @@ export class PrismaExpensesRepository implements ExpensesRepository {
                 currentInstallment: true,
                 isPaid: true,
                 dateItWasPaid: true,
-                responsible: {  
+                responsible: {
                     select: {
                         id: true,
                         name: true
@@ -103,7 +103,7 @@ export class PrismaExpensesRepository implements ExpensesRepository {
                     }
                 },
                 fixedExpenseId: true
-            }    
+            }
         });
 
         return expenses;
@@ -113,47 +113,49 @@ export class PrismaExpensesRepository implements ExpensesRepository {
         if (isFixed) {
             const fixedExpense = await prisma.fixedExpense.create({
                 data: {
-                    name, 
-                    value, 
-                    responsibleId, 
-                    groupId, 
-                    paymentDay: paymentDay, 
+                    name,
+                    value,
+                    responsibleId,
+                    groupId,
+                    paymentDay: paymentDay,
                     lastMonthProcessed: Number(moment().format("MM")),
-                    totalInstallments, 
-                    currentInstallment,                    
+                    totalInstallments,
+                    currentInstallment: 1,
                     createdBy: userSessionId
                 }
             });
 
             const monthlyExpense = await prisma.monthlyExpense.create({
                 data: {
-                    name, 
-                    value, 
-                    responsibleId, 
-                    groupId, 
-                    paymentDay: paymentDay, 
+                    name,
+                    value,
+                    responsibleId,
+                    groupId,
+                    paymentDay: paymentDay,
                     paymentMonth: Number(moment().format("MM")),
                     isPaid: false,
-                    dateItWasPaid: null,                    
+                    dateItWasPaid: null,
                     fixedExpenseId: fixedExpense.id,
+                    totalInstallments,
+                    currentInstallment: 1,
                     createdBy: userSessionId
                 }
             });
-        }  
+        }
         else {
             await prisma.monthlyExpense.create({
                 data: {
-                    name, 
-                    value, 
-                    responsibleId, 
-                    groupId, 
-                    paymentDay: paymentDay, 
+                    name,
+                    value,
+                    responsibleId,
+                    groupId,
+                    paymentDay: paymentDay,
                     paymentMonth: Number(moment().format("MM")),
                     isPaid: false,
-                    dateItWasPaid: null,                                     
+                    dateItWasPaid: null,
                     createdBy: userSessionId
                 }
-            });    
+            });
         }
     };
 
@@ -163,7 +165,7 @@ export class PrismaExpensesRepository implements ExpensesRepository {
                 id: id
             },
             select: {
-                id: true,                
+                id: true,
                 totalInstallments: true,
                 currentInstallment: true,
                 isPaid: true,
@@ -171,16 +173,16 @@ export class PrismaExpensesRepository implements ExpensesRepository {
                 responsibleId: true,
                 groupId: true,
                 fixedExpenseId: true
-            }    
+            }
         });
 
         await prisma.monthlyExpense.update({
             data: {
-                name, 
-                value, 
-                responsibleId, 
-                groupId, 
-                paymentDay,                
+                name,
+                value,
+                responsibleId,
+                groupId,
+                paymentDay
             },
             where: {
                 id: id
@@ -190,11 +192,11 @@ export class PrismaExpensesRepository implements ExpensesRepository {
         if (updateAllLinkedExpenses && expense?.fixedExpenseId) {
             await prisma.fixedExpense.update({
                 data: {
-                    name, 
-                    value, 
-                    responsibleId, 
-                    groupId, 
-                    paymentDay,                
+                    name,
+                    value,
+                    responsibleId,
+                    groupId,
+                    paymentDay,
                 },
                 where: {
                     id: expense?.fixedExpenseId
@@ -204,14 +206,14 @@ export class PrismaExpensesRepository implements ExpensesRepository {
         return null;
     };
 
-    async delete(id: string, deleteLinkedFixedExpense: boolean) {        
+    async delete(id: string, deleteLinkedFixedExpense: boolean) {
         const expense = await prisma.monthlyExpense.findUnique({
             where: {
                 id: id
             }
         })
 
-        if (expense) {            
+        if (expense) {
             await prisma.monthlyExpense.delete({
                 where: {
                     id: id
@@ -225,11 +227,11 @@ export class PrismaExpensesRepository implements ExpensesRepository {
                     }
                 })
             }
-        }        
+        }
     };
 
-    async processExpenses() {
-        const actualMonth = moment().day();
+    async processNextMonthExpenses() {
+        const nextMonth = Number(moment().format("MM")) + 1;
 
         const fixedExpenses = await prisma.fixedExpense.findMany({
             where: {
@@ -238,16 +240,52 @@ export class PrismaExpensesRepository implements ExpensesRepository {
         })
 
         fixedExpenses.map(async (item) => {
-            const monthlyExpense = await prisma.monthlyExpense.findFirst({
-                where: {
-                    createdBy: userSessionId,
-                    paymentMonth: actualMonth,
-                    fixedExpenseId: item.id
-                }
-            });
+            if (item.lastMonthProcessed <= nextMonth) {
+                const monthlyExpense = await prisma.monthlyExpense.findFirst({
+                    where: {
+                        createdBy: userSessionId,
+                        paymentMonth: nextMonth,
+                        fixedExpenseId: item.id
+                    }
+                });
 
-            if (!monthlyExpense) {
-                // mágica acontece
+                if (!monthlyExpense) {
+                    await prisma.monthlyExpense.create({
+                        data: {
+                            name: item.name,
+                            value: item.value,
+                            responsibleId: item.responsibleId,
+                            groupId: item.groupId,
+                            paymentDay: item.paymentDay,
+                            paymentMonth: nextMonth,
+                            isPaid: false,
+                            fixedExpenseId: item.id,
+                            totalInstallments: item.totalInstallments,
+                            currentInstallment:
+                                item.lastMonthProcessed < nextMonth &&
+                                    item.currentInstallment &&
+                                    item.currentInstallment > 0 ?
+                                    item.currentInstallment + 1 :
+                                    item.lastMonthProcessed === nextMonth &&
+                                        item.currentInstallment &&
+                                        item.currentInstallment > 0 ?
+                                        item.currentInstallment :
+                                        undefined,
+                            createdBy: userSessionId
+                        }
+                    })
+
+                    if (item.lastMonthProcessed < nextMonth)
+                        await prisma.fixedExpense.update({
+                            data: {
+                                currentInstallment: item.currentInstallment! + 1,
+                                lastMonthProcessed: nextMonth
+                            },
+                            where: {
+                                id: item.id
+                            }
+                        })
+                }
             }
         })
     };
