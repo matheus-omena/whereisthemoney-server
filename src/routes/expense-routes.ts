@@ -74,9 +74,9 @@ expenseRoutes.put('/processNextMonthExpenses', validateToken, async (req, res) =
         })
 })
 
-expenseRoutes.put('/:id', validateToken, async (req, res) => {
-    const { id } = req.params;
-    const { name, value, responsibleId, groupId, paymentDay, updateAllLinkedExpenses } = req.body;
+expenseRoutes.put('/:id/updateLinkedFixedExpense/:updateLinkedFixedExpense', validateToken, async (req, res) => {
+    const { id, updateLinkedFixedExpense } = req.params;
+    const { name, value, responsibleId, groupId, paymentDay } = req.body;
 
     const updateExpensesUseCase = new UpdateExpenseUseCase(prismaExpensesRepository);
 
@@ -85,9 +85,8 @@ expenseRoutes.put('/:id', validateToken, async (req, res) => {
         value,
         responsibleId,
         groupId,
-        paymentDay,
-        updateAllLinkedExpenses
-    })
+        paymentDay        
+    }, updateLinkedFixedExpense === "true")
 
     return res.status(201).json({ message: 'Despesa atualizada com sucesso.' });
 })

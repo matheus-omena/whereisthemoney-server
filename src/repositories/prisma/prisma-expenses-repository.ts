@@ -159,7 +159,7 @@ export class PrismaExpensesRepository implements ExpensesRepository {
         }
     };
 
-    async update(id: string, { name, value, responsibleId, groupId, paymentDay, updateAllLinkedExpenses }: UpdateExpenseData) {
+    async update(id: string, { name, value, responsibleId, groupId, paymentDay }: UpdateExpenseData, updateLinkedFixedExpense: boolean) {
         const expense = await prisma.monthlyExpense.findUnique({
             where: {
                 id: id
@@ -189,7 +189,7 @@ export class PrismaExpensesRepository implements ExpensesRepository {
             }
         });
 
-        if (updateAllLinkedExpenses && expense?.fixedExpenseId) {
+        if (updateLinkedFixedExpense && expense?.fixedExpenseId) {
             await prisma.fixedExpense.update({
                 data: {
                     name,

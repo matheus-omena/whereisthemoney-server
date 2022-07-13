@@ -5,8 +5,7 @@ export interface UpdateExpenseUseCaseRequest {
     value: number;
     responsibleId: string;
     groupId: string;
-    paymentDay: number;        
-    updateAllLinkedExpenses?: boolean;
+    paymentDay: number;    
 }
 
 export class UpdateExpenseUseCase {    
@@ -14,8 +13,8 @@ export class UpdateExpenseUseCase {
         private expensesRepository: ExpensesRepository
     ) {}
 
-    async execute(id: string, request: UpdateExpenseUseCaseRequest) {
-        const group = await this.expensesRepository.update(id, request)
+    async execute(id: string, request: UpdateExpenseUseCaseRequest, updateLinkedFixedExpense: boolean) {
+        const group = await this.expensesRepository.update(id, request, updateLinkedFixedExpense)
 
         return group;
     }
