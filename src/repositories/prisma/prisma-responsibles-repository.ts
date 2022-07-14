@@ -66,5 +66,5 @@ export class PrismaResponsiblesRepository implements ResponsiblesRepository {
                 id: id
             }
         })
-    };
+    };    
 }

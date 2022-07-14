@@ -38,4 +38,5 @@ export interface ExpensesRepository {
     processNextMonthExpenses: () => Promise<void>;
     pay: (id: string) => Promise<void>;
     payGroup: (groupId: string, month: number) => Promise<void>;
+    balanceByResponsible: (month: number) => Promise<any>;
 }

@@ -1,6 +1,7 @@
 import express from "express";
 import { validateToken } from "../auth";
 import { PrismaExpensesRepository } from "../repositories/prisma/prisma-expenses-repository";
+import { BalanceByResponsibleUseCase } from "../use-cases/expenses/balance-by-responsibles-use-case";
 import { CreateExpenseUseCase } from "../use-cases/expenses/create-expense-use-case";
 import { DeleteExpenseUseCase } from "../use-cases/expenses/delete-expense-use-case";
 import { FindExpenseByIdUseCase } from "../use-cases/expenses/find-expense-by-id-use-case";
@@ -13,6 +14,15 @@ import { UpdateExpenseUseCase } from "../use-cases/expenses/update-expense-use-c
 
 export const expenseRoutes = express.Router();
 const prismaExpensesRepository = new PrismaExpensesRepository();
+
+expenseRoutes.get('/balancebyresponsibles/month/:month', validateToken, async (req, res) => {
+    const { month } = req.params;
+    const balanceByResponsibleUseCase = new BalanceByResponsibleUseCase(prismaExpensesRepository);
+
+    const resp = await balanceByResponsibleUseCase.execute(Number(month));
+
+    return res.status(201).send(resp);
+})
 
 expenseRoutes.get('/', validateToken, async (req, res) => {
     const findExpensesUseCase = new FindExpensesUseCase(prismaExpensesRepository);

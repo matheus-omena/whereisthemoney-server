@@ -62,5 +62,5 @@ export class PrismaCategoriesRepository implements CategoriesRepository {
                 id: id
             }
         })
-    };
+    };    
 }

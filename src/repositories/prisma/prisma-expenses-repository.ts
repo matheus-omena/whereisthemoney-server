@@ -104,9 +104,12 @@ export class PrismaExpensesRepository implements ExpensesRepository {
                 },
                 fixedExpenseId: true
             },
-            orderBy: {
-                paymentDay: 'asc'                
-            }
+            orderBy: [{
+                paymentDay: 'asc'
+            },
+            {
+                name: 'asc'
+            }]
         });
 
         return expenses;
@@ -316,5 +319,47 @@ export class PrismaExpensesRepository implements ExpensesRepository {
                 paymentMonth: month
             }
         })
+    }
+
+    async balanceByResponsible(month: number) {
+        const responsibles = await prisma.responsible.findMany({
+            select: {
+                id: true,
+                name: true,
+                color: true
+            },
+            where: {
+                createdBy: userSessionId
+            },
+            orderBy: {
+                name: 'asc'
+            }
+        });  
+
+        const totalExpensesByResponsible = await prisma.monthlyExpense.groupBy({
+            by: ['responsibleId'],
+            _sum: {
+                value: true            
+            },   
+            where: {
+                createdBy: userSessionId,                
+                paymentMonth: month
+            }     
+        }); 
+
+        let processedExpenses: any[] = [];
+        
+        responsibles.map((item) => {        
+            let total = totalExpensesByResponsible.find(x => x.responsibleId == item.id) ? totalExpensesByResponsible.find(x => x.responsibleId == item.id)?._sum.value : 0;            
+            processedExpenses.push(
+                {                    
+                    name: item.name,
+                    color: item.color,
+                    totalValue: Number(total),                    
+                }
+            )    
+        })
+
+        return processedExpenses;
     }
 }
