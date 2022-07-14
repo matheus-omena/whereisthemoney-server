@@ -103,6 +103,9 @@ export class PrismaExpensesRepository implements ExpensesRepository {
                     }
                 },
                 fixedExpenseId: true
+            },
+            orderBy: {
+                paymentDay: 'asc'                
             }
         });
 
@@ -289,4 +292,29 @@ export class PrismaExpensesRepository implements ExpensesRepository {
             }
         })
     };
+
+    async pay(id: string) {
+        await prisma.monthlyExpense.update({
+            data: {
+                isPaid: true,
+                dateItWasPaid: new Date()
+            },
+            where: {
+                id: id
+            }
+        })
+    };
+
+    async payGroup(groupId: string, month: number) {
+        await prisma.monthlyExpense.updateMany({
+            data: {
+                isPaid: true,
+                dateItWasPaid: new Date()
+            },
+            where: {
+                groupId: groupId,
+                paymentMonth: month
+            }
+        })
+    }
 }

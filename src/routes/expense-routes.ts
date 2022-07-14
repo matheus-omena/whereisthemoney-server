@@ -6,6 +6,8 @@ import { DeleteExpenseUseCase } from "../use-cases/expenses/delete-expense-use-c
 import { FindExpenseByIdUseCase } from "../use-cases/expenses/find-expense-by-id-use-case";
 import { FindExpensesByGroupUseCase } from "../use-cases/expenses/find-expenses-by-group-use-case";
 import { FindExpensesUseCase } from "../use-cases/expenses/find-expenses-use-case";
+import { PayExpenseGroupUseCase } from "../use-cases/expenses/pay-expense-group-use-case";
+import { PayExpenseUseCase } from "../use-cases/expenses/pay-expense-use-case";
 import { ProcessNextMonthExpensesUseCase } from "../use-cases/expenses/process-next-month-expense-use-case";
 import { UpdateExpenseUseCase } from "../use-cases/expenses/update-expense-use-case";
 
@@ -60,6 +62,32 @@ expenseRoutes.post('/', validateToken, async (req, res) => {
     }
 
     return res.status(201).json({ message: 'Despesa criada com sucesso.' });
+})
+
+expenseRoutes.put('/pay/:id', validateToken, async (req, res) => {
+    const { id } = req.params;
+    const payExpense = new PayExpenseUseCase(prismaExpensesRepository);
+
+    await payExpense.execute(id)
+        .then(resp => {
+            return res.status(201).json({ message: 'Despesa paga com sucesso.' })
+        })
+        .catch(error => {
+            return res.status(500).json({ data: error, message: 'Erro ao pagar despesa' })
+        })
+})
+
+expenseRoutes.put('/payGroup/:groupId/month/:month', validateToken, async (req, res) => {
+    const { groupId, month } = req.params;
+    const payExpenseGroup = new PayExpenseGroupUseCase(prismaExpensesRepository);
+
+    await payExpenseGroup.execute(groupId, Number(month))
+        .then(resp => {
+            return res.status(201).json({ message: 'Grupo de despesas pago com sucesso.' })
+        })
+        .catch(error => {
+            return res.status(500).json({ data: error, message: 'Erro ao pagar grupo de despesas' })
+        })
 })
 
 expenseRoutes.put('/processNextMonthExpenses', validateToken, async (req, res) => {

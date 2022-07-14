@@ -36,4 +36,6 @@ export interface ExpensesRepository {
     update: (id: string, data: UpdateExpenseData, updateLinkedFixedExpense: boolean) => Promise<any>;
     delete: (id: string, deleteLinkedFixedExpense: boolean) => Promise<void>;
     processNextMonthExpenses: () => Promise<void>;
+    pay: (id: string) => Promise<void>;
+    payGroup: (groupId: string, month: number) => Promise<void>;
 }
