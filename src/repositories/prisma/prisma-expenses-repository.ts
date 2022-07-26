@@ -362,4 +362,46 @@ export class PrismaExpensesRepository implements ExpensesRepository {
 
         return processedExpenses;
     }
+
+    async balanceByGroup(month: number) {
+        const groups = await prisma.expenseGroup.findMany({
+            select: {
+                id: true,
+                name: true,
+                color: true
+            },
+            where: {
+                createdBy: userSessionId
+            },
+            orderBy: {
+                name: 'asc'
+            }
+        });  
+
+        const totalExpensesByGroup = await prisma.monthlyExpense.groupBy({
+            by: ['groupId'],
+            _sum: {
+                value: true            
+            },   
+            where: {
+                createdBy: userSessionId,                
+                paymentMonth: month
+            }     
+        }); 
+
+        let processedExpenses: any[] = [];
+        
+        groups.map((item) => {        
+            let total = totalExpensesByGroup.find(x => x.groupId == item.id) ? totalExpensesByGroup.find(x => x.groupId == item.id)?._sum.value : 0;            
+            processedExpenses.push(
+                {                    
+                    name: item.name,
+                    color: item.color,
+                    totalValue: Number(total),                    
+                }
+            )    
+        })
+
+        return processedExpenses;
+    }
 }
