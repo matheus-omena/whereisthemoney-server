@@ -4,8 +4,7 @@ export interface UpdateExpenseGroupUseCaseRequest {
     name: string;    
     color: string;
     type: number;
-    paymentDay?: number;
-    categoryId: string; 
+    paymentDay?: number;    
 }
 
 export class UpdateExpenseGroupUseCase {    
@@ -14,14 +13,13 @@ export class UpdateExpenseGroupUseCase {
     ) {}
 
     async execute(id: string, request: UpdateExpenseGroupUseCaseRequest) {
-        const { name, color, type, paymentDay, categoryId } = request;        
+        const { name, color, type, paymentDay } = request;        
 
         const group = await this.groupsRepository.update(id, {        
             name,
             color,
             type,
-            paymentDay,
-            categoryId
+            paymentDay            
         })
 
         return group;

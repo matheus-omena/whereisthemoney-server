@@ -3,16 +3,14 @@ export interface ExpenseGroupQueryData {
     name: string;    
     color: string;
     type: number;
-    paymentDay?: number;
-    categoryId: string;
+    paymentDay?: number;    
 }
 
 export interface ExpenseGroupData {    
     name: string;    
     color: string;
     type: number;
-    paymentDay?: number;
-    categoryId: string;
+    paymentDay?: number;    
 }
 
 export interface ExpenseGroupWithGroupedExpensesData {

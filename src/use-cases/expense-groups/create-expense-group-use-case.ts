@@ -4,8 +4,7 @@ export interface CreateExpenseGroupUseCaseRequest {
     name: string;    
     color: string;
     type: number;
-    paymentDay?: number;
-    categoryId: string; 
+    paymentDay?: number;    
 }
 
 export class CreateExpenseGroupUseCase {    
@@ -14,14 +13,13 @@ export class CreateExpenseGroupUseCase {
     ) {}
 
     async execute(request: CreateExpenseGroupUseCaseRequest) {
-        const { name, color, type, paymentDay, categoryId } = request;        
+        const { name, color, type, paymentDay } = request;        
 
         const group = await this.groupsRepository.create({
             name,
             color,
             type,
-            paymentDay,
-            categoryId
+            paymentDay            
         })
 
         return group;

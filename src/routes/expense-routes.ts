@@ -61,7 +61,7 @@ expenseRoutes.get('/:id', validateToken, async (req, res) => {
 })
 
 expenseRoutes.post('/', validateToken, async (req, res) => {
-    const { isFixed, name, value, responsibleId, groupId, paymentDay, totalInstallments, currentInstallment } = req.body;
+    const { isFixed, name, value, responsibleId, groupId, categoryId, paymentDay, totalInstallments, currentInstallment } = req.body;
 
     const createExpenseUseCase = new CreateExpenseUseCase(prismaExpensesRepository);
 
@@ -72,6 +72,7 @@ expenseRoutes.post('/', validateToken, async (req, res) => {
             value,
             responsibleId,
             groupId,
+            categoryId,
             paymentDay,
             totalInstallments,
             currentInstallment
@@ -124,7 +125,7 @@ expenseRoutes.put('/processNextMonthExpenses', validateToken, async (req, res) =
 
 expenseRoutes.put('/:id/updateLinkedFixedExpense/:updateLinkedFixedExpense', validateToken, async (req, res) => {
     const { id, updateLinkedFixedExpense } = req.params;
-    const { name, value, responsibleId, groupId, paymentDay } = req.body;
+    const { name, value, responsibleId, groupId, categoryId, paymentDay } = req.body;
 
     const updateExpensesUseCase = new UpdateExpenseUseCase(prismaExpensesRepository);
 
@@ -133,6 +134,7 @@ expenseRoutes.put('/:id/updateLinkedFixedExpense/:updateLinkedFixedExpense', val
         value,
         responsibleId,
         groupId,
+        categoryId,
         paymentDay        
     }, updateLinkedFixedExpense === "true")
 

@@ -4,6 +4,7 @@ export interface ExpenseQueryData {
     value: number;
     responsibleId: string;
     groupId: string;
+    categoryId: string;
     paymentDate?: Date;
     totalInstallments?: number;
     currentInstallment?: number;
@@ -15,6 +16,7 @@ export interface ExpenseData {
     value: number;
     responsibleId: string;
     groupId: string;
+    categoryId: string;
     paymentDay: number;     
     totalInstallments?: number;
     currentInstallment?: number;    
@@ -25,6 +27,7 @@ export interface UpdateExpenseData {
     value: number;
     responsibleId: string;
     groupId: string;
+    categoryId: string;
     paymentDay: number;    
 }
 

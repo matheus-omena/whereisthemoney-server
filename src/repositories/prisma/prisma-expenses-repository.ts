@@ -32,6 +32,12 @@ export class PrismaExpensesRepository implements ExpensesRepository {
                         paymentDay: true
                     }
                 },
+                category: {
+                    select: {
+                        id: true,
+                        name: true,                                            
+                    }
+                }
             },
             where: {
                 createdBy: userSessionId
@@ -65,6 +71,12 @@ export class PrismaExpensesRepository implements ExpensesRepository {
                     select: {
                         id: true,
                         name: true,
+                    }
+                },
+                category: {
+                    select: {
+                        id: true,
+                        name: true,                                            
                     }
                 },
                 fixedExpenseId: true
@@ -102,6 +114,12 @@ export class PrismaExpensesRepository implements ExpensesRepository {
                         name: true
                     }
                 },
+                category: {
+                    select: {
+                        id: true,
+                        name: true,                                            
+                    }
+                },
                 fixedExpenseId: true
             },
             orderBy: [{
@@ -115,7 +133,7 @@ export class PrismaExpensesRepository implements ExpensesRepository {
         return expenses;
     };
 
-    async create({ isFixed, name, value, responsibleId, groupId, paymentDay, totalInstallments, currentInstallment }: ExpenseData) {
+    async create({ isFixed, name, value, responsibleId, groupId, categoryId, paymentDay, totalInstallments, currentInstallment }: ExpenseData) {
         if (isFixed) {
             const fixedExpense = await prisma.fixedExpense.create({
                 data: {
@@ -123,6 +141,7 @@ export class PrismaExpensesRepository implements ExpensesRepository {
                     value,
                     responsibleId,
                     groupId,
+                    categoryId,
                     paymentDay: paymentDay,
                     lastMonthProcessed: Number(moment().format("MM")),
                     totalInstallments,
@@ -137,6 +156,7 @@ export class PrismaExpensesRepository implements ExpensesRepository {
                     value,
                     responsibleId,
                     groupId,
+                    categoryId,
                     paymentDay: paymentDay,
                     paymentMonth: Number(moment().format("MM")),
                     isPaid: false,
@@ -155,6 +175,7 @@ export class PrismaExpensesRepository implements ExpensesRepository {
                     value,
                     responsibleId,
                     groupId,
+                    categoryId,
                     paymentDay: paymentDay,
                     paymentMonth: Number(moment().format("MM")),
                     isPaid: false,
@@ -165,7 +186,7 @@ export class PrismaExpensesRepository implements ExpensesRepository {
         }
     };
 
-    async update(id: string, { name, value, responsibleId, groupId, paymentDay }: UpdateExpenseData, updateLinkedFixedExpense: boolean) {
+    async update(id: string, { name, value, responsibleId, groupId, categoryId, paymentDay }: UpdateExpenseData, updateLinkedFixedExpense: boolean) {
         const expense = await prisma.monthlyExpense.findUnique({
             where: {
                 id: id
@@ -178,6 +199,7 @@ export class PrismaExpensesRepository implements ExpensesRepository {
                 dateItWasPaid: true,
                 responsibleId: true,
                 groupId: true,
+                categoryId: true,
                 fixedExpenseId: true
             }
         });
@@ -188,6 +210,7 @@ export class PrismaExpensesRepository implements ExpensesRepository {
                 value,
                 responsibleId,
                 groupId,
+                categoryId,
                 paymentDay
             },
             where: {
@@ -202,6 +225,7 @@ export class PrismaExpensesRepository implements ExpensesRepository {
                     value,
                     responsibleId,
                     groupId,
+                    categoryId,
                     paymentDay,
                 },
                 where: {
@@ -262,6 +286,7 @@ export class PrismaExpensesRepository implements ExpensesRepository {
                             value: item.value,
                             responsibleId: item.responsibleId,
                             groupId: item.groupId,
+                            categoryId: item.categoryId,
                             paymentDay: item.paymentDay,
                             paymentMonth: nextMonth,
                             isPaid: false,

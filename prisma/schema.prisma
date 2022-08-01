@@ -24,6 +24,7 @@ model User {
   ExpenseGroup    ExpenseGroup[]
   FixedExpense    FixedExpense[]
   MonthlyExpense  MonthlyExpense[]
+
   @@map("users")
 }
 
@@ -48,7 +49,8 @@ model ExpenseCategory {
   user      User     @relation(fields: [createdBy], references: [id])
   createdBy String
 
-  ExpenseGroup ExpenseGroup[]
+  MonthlyExpense MonthlyExpense[]
+  FixedExpense   FixedExpense[]
 
   @@map("expensecategories")
 }
@@ -63,9 +65,6 @@ model ExpenseGroup {
 
   user      User   @relation(fields: [createdBy], references: [id])
   createdBy String
-
-  category   ExpenseCategory @relation(fields: [categoryId], references: [id])
-  categoryId String
 
   FixedExpense   FixedExpense[]
   MonthlyExpense MonthlyExpense[]
@@ -86,10 +85,12 @@ model FixedExpense {
   user      User   @relation(fields: [createdBy], references: [id])
   createdBy String
 
-  responsible   Responsible  @relation(fields: [responsibleId], references: [id])
+  responsible   Responsible      @relation(fields: [responsibleId], references: [id])
   responsibleId String
-  group         ExpenseGroup @relation(fields: [groupId], references: [id])
+  group         ExpenseGroup     @relation(fields: [groupId], references: [id])
   groupId       String
+  category      ExpenseCategory? @relation(fields: [categoryId], references: [id])
+  categoryId    String?
 
   MonthlyExpense MonthlyExpense[]
 
@@ -112,11 +113,13 @@ model MonthlyExpense {
   user      User     @relation(fields: [createdBy], references: [id])
 
   responsibleId  String
-  responsible    Responsible   @relation(fields: [responsibleId], references: [id])
+  responsible    Responsible      @relation(fields: [responsibleId], references: [id])
   groupId        String
-  group          ExpenseGroup  @relation(fields: [groupId], references: [id])
+  group          ExpenseGroup     @relation(fields: [groupId], references: [id])
+  categoryId     String?
+  category       ExpenseCategory? @relation(fields: [categoryId], references: [id])
   fixedExpenseId String?
-  fixedExpense   FixedExpense? @relation(fields: [fixedExpenseId], references: [id])
+  fixedExpense   FixedExpense?    @relation(fields: [fixedExpenseId], references: [id])
 
   @@map("monthlyexpenses")
 }

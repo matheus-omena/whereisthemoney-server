@@ -5,6 +5,7 @@ export interface UpdateExpenseUseCaseRequest {
     value: number;
     responsibleId: string;
     groupId: string;
+    categoryId: string;
     paymentDay: number;    
 }
 

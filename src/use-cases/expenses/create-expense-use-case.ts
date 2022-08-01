@@ -5,6 +5,7 @@ export interface CreateExpenseUseCaseRequest {
     name: string;    
     value: number;
     responsibleId: string;
+    categoryId: string;
     groupId: string;
     paymentDay: number;    
     totalInstallments?: number;
@@ -17,7 +18,7 @@ export class CreateExpenseUseCase {
     ) {}
 
     async execute(request: CreateExpenseUseCaseRequest) {
-        const { isFixed, name, value, responsibleId, groupId, paymentDay, totalInstallments, currentInstallment } = request;        
+        const { isFixed, name, value, responsibleId, groupId, categoryId, paymentDay, totalInstallments, currentInstallment } = request;        
 
         const group = await this.expensesRepository.create({
             isFixed, 
@@ -25,6 +26,7 @@ export class CreateExpenseUseCase {
             value, 
             responsibleId, 
             groupId, 
+            categoryId,
             paymentDay, 
             totalInstallments, 
             currentInstallment

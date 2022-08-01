@@ -10,12 +10,7 @@ export class PrismaExpenseGroupsRepository implements ExpenseGroupsRepository {
                 name: true,
                 color: true,
                 type: true,
-                paymentDay: true,
-                category: {
-                    select: {
-                        name: true
-                    }
-                }
+                paymentDay: true
             },
             where: {
                 createdBy: userSessionId
@@ -89,13 +84,7 @@ export class PrismaExpenseGroupsRepository implements ExpenseGroupsRepository {
                 name: true,
                 color: true,
                 type: true,
-                paymentDay: true,
-                category: {
-                    select: {
-                        id: true,
-                        name: true
-                    }
-                }
+                paymentDay: true
             },
             where: {
                 id: id
@@ -105,14 +94,13 @@ export class PrismaExpenseGroupsRepository implements ExpenseGroupsRepository {
         return group;
     };
 
-    async create({ name, color, type, paymentDay, categoryId }: ExpenseGroupData) {
+    async create({ name, color, type, paymentDay }: ExpenseGroupData) {
         const group = await prisma.expenseGroup.create({
             data: {
                 name,
                 color,
                 type,
-                paymentDay,
-                categoryId,
+                paymentDay,                
                 createdBy: userSessionId
             }
         })
@@ -120,7 +108,7 @@ export class PrismaExpenseGroupsRepository implements ExpenseGroupsRepository {
         return group;
     };
 
-    async update(id: string, { name, color, type, paymentDay, categoryId }: ExpenseGroupData) {
+    async update(id: string, { name, color, type, paymentDay }: ExpenseGroupData) {
         const group = await prisma.expenseGroup.update({
             where: {
                 id: id
@@ -129,8 +117,7 @@ export class PrismaExpenseGroupsRepository implements ExpenseGroupsRepository {
                 name,
                 color,
                 type,
-                paymentDay,
-                categoryId,
+                paymentDay,                
                 createdBy: userSessionId
             }
         })
