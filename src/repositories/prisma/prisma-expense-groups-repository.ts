@@ -14,6 +14,9 @@ export class PrismaExpenseGroupsRepository implements ExpenseGroupsRepository {
             },
             where: {
                 createdBy: userSessionId
+            },
+            orderBy: {
+                name: 'asc'
             }
         });
         return groups;
@@ -126,6 +129,18 @@ export class PrismaExpenseGroupsRepository implements ExpenseGroupsRepository {
     };
 
     async delete(id: string) {
+        await prisma.monthlyExpense.deleteMany({
+            where: {
+                groupId: id
+            }
+        });
+
+        await prisma.fixedExpense.deleteMany({
+            where: {
+                groupId: id
+            }
+        });
+
         await prisma.expenseGroup.delete({
             where: {
                 id: id
