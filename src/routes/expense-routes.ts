@@ -3,6 +3,7 @@ import { validateToken } from "../auth";
 import { PrismaExpensesRepository } from "../repositories/prisma/prisma-expenses-repository";
 import { BalanceByResponsibleUseCase } from "../use-cases/expenses/balance-by-responsibles-use-case";
 import { BalanceByGroupUseCase } from "../use-cases/expenses/balance-by-groups-use-case";
+import { BalanceByCategoriesUseCase } from "../use-cases/expenses/balance-by-categories-use-case";
 import { CreateExpenseUseCase } from "../use-cases/expenses/create-expense-use-case";
 import { DeleteExpenseUseCase } from "../use-cases/expenses/delete-expense-use-case";
 import { FindExpenseByIdUseCase } from "../use-cases/expenses/find-expense-by-id-use-case";
@@ -30,6 +31,15 @@ expenseRoutes.get('/balancebygroups/month/:month', validateToken, async (req, re
     const balanceByGroupUseCase = new BalanceByGroupUseCase(prismaExpensesRepository);
 
     const resp = await balanceByGroupUseCase.execute(Number(month));
+
+    return res.status(201).send(resp);
+})
+
+expenseRoutes.get('/balancebycategories/month/:month', validateToken, async (req, res) => {
+    const { month } = req.params;
+    const balanceByCategoryUseCase = new BalanceByCategoriesUseCase(prismaExpensesRepository);
+
+    const resp = await balanceByCategoryUseCase.execute(Number(month));
 
     return res.status(201).send(resp);
 })
