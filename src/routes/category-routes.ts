@@ -56,7 +56,12 @@ categoryRoutes.delete('/:id', validateToken, async (req, res) => {
     const prismaCategoriesRepository = new PrismaCategoriesRepository();
     const deleteCategoryUseCase = new DeleteCategoryUseCase(prismaCategoriesRepository);
 
-    await deleteCategoryUseCase.execute(id);
-
-    return res.status(201).send();
+    await deleteCategoryUseCase
+        .execute(id)
+        .then(resp => {
+            return res.status(201).json({ message: 'Categoria excluída com sucesso.' })
+        })
+        .catch(error => {
+            return res.status(500).json({ data: error, message: 'Erro ao excluir categoria' })
+        })    
 })

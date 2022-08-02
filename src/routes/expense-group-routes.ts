@@ -80,7 +80,14 @@ expenseGroupRoutes.delete('/:id', validateToken, async (req, res) => {
     const prismaExpenseGroupsRepository = new PrismaExpenseGroupsRepository();
     const deleteExpenseGroupUseCase = new DeleteExpenseGroupUseCase(prismaExpenseGroupsRepository);
 
-    await deleteExpenseGroupUseCase.execute(id);
+    await deleteExpenseGroupUseCase
+        .execute(id)
+        .then(resp => {
+            return res.status(201).json({ message: 'Grupo de despesas excluído com sucesso.' })
+        })
+        .catch(error => {
+            return res.status(500).json({ data: error, message: 'Erro ao excluir grupo de despesa' })
+        })  
 
     return res.status(201).send();
 })

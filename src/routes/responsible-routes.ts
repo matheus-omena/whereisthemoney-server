@@ -62,7 +62,14 @@ responsibleRoutes.delete('/:id', validateToken, async (req, res) => {
     const prismaResponsiblesRepository = new PrismaResponsiblesRepository();
     const deleteResponsibleUseCase = new DeleteResponsibleUseCase(prismaResponsiblesRepository);
 
-    await deleteResponsibleUseCase.execute(id);
+    await deleteResponsibleUseCase
+        .execute(id)
+        .then(resp => {
+            return res.status(201).json({ message: 'Responsável excluído com sucesso.' })
+        })
+        .catch(error => {
+            return res.status(500).json({ data: error, message: 'Erro ao excluir responsável' })
+        })  
 
     return res.status(201).send();
 })
