@@ -265,12 +265,14 @@ export class PrismaExpensesRepository implements ExpensesRepository {
 
         const fixedExpenses = await prisma.fixedExpense.findMany({
             where: {
-                createdBy: userSessionId
+                createdBy: userSessionId                
             }
-        })
+        })        
 
         fixedExpenses.map(async (item) => {
-            if (item.lastMonthProcessed <= nextMonth) {
+            const process = ((item.currentInstallment && item.totalInstallments) && item.currentInstallment < item.totalInstallments);
+
+            if (item.lastMonthProcessed <= nextMonth && process) {
                 const monthlyExpense = await prisma.monthlyExpense.findFirst({
                     where: {
                         createdBy: userSessionId,
