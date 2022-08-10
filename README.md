@@ -1,4 +1,4 @@
-<h1>My Fynances</h1> 
+<h1>Where's The Money?</h1> 
 
 <p align="center">  
    <img src="http://img.shields.io/static/v1?label=STATUS&message=EM%20DESENVOLVIMENTO&color=RED&style=for-the-badge"/>   
