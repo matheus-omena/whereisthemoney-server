@@ -6,7 +6,7 @@ export function validateToken(req: any, res: any, next: any) {
     let token = req.body.token || req.query.token || req.headers["authorization"]
 
         if (!token) {
-            return res.status(403).send({ message: "Nenhum token fornecido. Acesso negado." });
+            return res.status(403).send({ message: "Nenhum token fornecido. Acesso negado!" });
         }
 
         if (token.startsWith('Bearer '))
