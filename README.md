@@ -42,7 +42,7 @@ node -v
 Clone o projeto localmente. 
 
 ```
-git clone https://github.com/matheus-omena/my-finances-server.git
+git clone https://github.com/matheus-omena/whereisthemoney-server.git
 ```
 
 No diretório clonado, instale as dependências do projeto.
