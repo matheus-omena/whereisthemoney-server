@@ -269,10 +269,12 @@ export class PrismaExpensesRepository implements ExpensesRepository {
             }
         })        
 
-        fixedExpenses.map(async (item) => {
-            const process = ((item.currentInstallment && item.totalInstallments) && item.currentInstallment < item.totalInstallments);
+        fixedExpenses.map(async (item) => {            
+            let process: boolean = true;
+            if (item.currentInstallment && item.totalInstallments) // Se houver parcelas
+                process = (item.currentInstallment < item.totalInstallments);            
 
-            if (item.lastMonthProcessed <= nextMonth && process) {
+            if (item.lastMonthProcessed <= nextMonth && process) {                
                 const monthlyExpense = await prisma.monthlyExpense.findFirst({
                     where: {
                         createdBy: userSessionId,
